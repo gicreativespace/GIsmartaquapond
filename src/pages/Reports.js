@@ -140,15 +140,15 @@ export function Reports() {
     { id: '7days', label: '7 Days', days: 7 },
     { id: '30days', label: '30 Days', days: 30 }
   ].forEach((period) => {
-    const button = element('button', 'reports-day-button', day.label);
+    const button = element('button', 'reports-day-button', period.label);
     button.type = 'button';
     button.setAttribute('aria-pressed', period.id === selectedPeriod ? 'true' : 'false');
-    if (day.id === selectedPeriod) button.classList.add('active');
+    if (period.id === selectedPeriod) button.classList.add('active');
     button.addEventListener('click', () => {
       selectedPeriod = period.id;
       selectedDays = period.days;
       tabButtons.forEach((tab, id) => {
-        const active = id === selectedDay;
+        const active = id === selectedPeriod;
         tab.classList.toggle('active', active);
         tab.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
