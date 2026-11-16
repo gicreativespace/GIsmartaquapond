@@ -235,110 +235,80 @@ export function Reports() {
     const hasCoverage = reportWindow.end > reportWindow.start;
     const ebHours = hasCoverage ? getExportHours('EB', reportWindow.start, reportWindow.end) : 0;
     const dgHours = hasCoverage ? getExportHours('DG', reportWindow.start, reportWindow.end) : 0;
-    const periodNames = { today: 'Today', yesterday: 'Yesterday', week: 'Weekly', month: 'Monthly' };
+    const periodNames = { today: 'DAILY', yesterday: 'YESTERDAY', week: 'WEEKLY', month: 'MONTHLY' };
     const reportDate = dateLabel.textContent || getISTDateLabel(0);
-    const doc = element('article', 'reports-pdf-document');
-    const style = element('style');
-    style.textContent = `
-      @page { size: A4 portrait; margin: 13mm 14mm; }
-      @media print {
-        body * { visibility: hidden !important; }
-        .reports-pdf-document, .reports-pdf-document * { visibility: visible !important; }
-        .reports-pdf-document { display:block !important; position:absolute !important; inset:0 !important; width:100% !important; color:#123B50 !important; background:#fff !important; font-family:Inter,Arial,sans-serif !important; }
-        .reports-pdf-document * { box-sizing:border-box; }
-        .reports-pdf-header { text-align:center; border-bottom:2px solid #078D87; padding:0 0 13px; margin-bottom:16px; }
-        .reports-pdf-brand { color:#078D87; font-size:25pt; line-height:1.15; font-weight:800; letter-spacing:.3px; }
-        .reports-pdf-tagline { color:#58717D; font-size:9pt; letter-spacing:1.5px; margin-top:4px; }
-        .reports-pdf-title { color:#123B50; font-size:21pt; font-weight:800; margin:15px 0 4px; }
-        .reports-pdf-date { color:#58717D; font-size:11pt; }
-        .reports-pdf-section { margin:13px 0 0; break-inside:avoid; }
-        .reports-pdf-section-title { font-size:13pt; font-weight:800; letter-spacing:.3px; margin:0 0 8px; color:#123B50; }
-        .reports-pdf-farm { display:grid; grid-template-columns:1fr 1fr; gap:9px 18px; padding:13px 15px; background:#F2F8FA; border:1px solid #DCE8EC; border-radius:9px; }
-        .reports-pdf-label { display:block; color:#58717D; font-size:9pt; margin-bottom:3px; }
-        .reports-pdf-value { display:block; color:#123B50; font-size:12pt; font-weight:700; }
-        .reports-pdf-power { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-        .reports-pdf-power-card { padding:13px 15px; border-radius:9px; border:1px solid #DCE8EC; }
-        .reports-pdf-power-card.eb { background:#EAF6F0; }
-        .reports-pdf-power-card.dg { background:#EDF4FA; }
-        .reports-pdf-power-label { font-size:10pt; font-weight:700; color:#58717D; }
-        .reports-pdf-power-hours { font-size:23pt; font-weight:800; line-height:1.3; margin-top:5px; color:#123B50; font-variant-numeric:tabular-nums; }
-        .reports-pdf-table { width:100%; border-collapse:collapse; }
-        .reports-pdf-table th { padding:8px 11px; background:#123B50; color:#fff; text-align:left; font-size:10pt; }
-        .reports-pdf-table td { padding:7px 11px; border-bottom:1px solid #DCE8EC; font-size:11pt; }
-        .reports-pdf-table tbody tr:nth-child(even) { background:#F2F8FA; }
-        .reports-pdf-table td:last-child,.reports-pdf-table th:last-child { text-align:right; }
-        .reports-pdf-footer { margin-top:16px; padding-top:9px; border-top:1px solid #DCE8EC; display:flex; justify-content:space-between; color:#58717D; font-size:9pt; }
-        .reports-pdf-footer strong { color:#078D87; }
-      }
-      @media screen { .reports-pdf-document { display:none; } }
-    `;
-    const header = element('header', 'reports-pdf-header');
-    header.append(
-      element('div', 'reports-pdf-brand', 'GI SMART POND'),
-      element('div', 'reports-pdf-tagline', 'SMART AQUACULTURE MONITORING'),
-      element('h1', 'reports-pdf-title', periodNames[selectedPeriod] + ' Performance Report'),
-      element('div', 'reports-pdf-date', reportDate)
-    );
-    const farm = element('section', 'reports-pdf-section');
-    farm.append(element('h2', 'reports-pdf-section-title', 'FARM DETAILS'));
-    const farmGrid = element('div', 'reports-pdf-farm');
-    [
-      ['Farm Name', DEMO_DATA.farm.name],
-      ['Pond ID', DEMO_DATA.farm.pondId],
-      ['Location', DEMO_DATA.farm.location],
-      ['Pond Size', DEMO_DATA.farm.pondSize]
-    ].forEach(([label, value]) => {
-      const item = element('div');
-      item.append(element('span', 'reports-pdf-label', label), element('strong', 'reports-pdf-value', value));
-      farmGrid.append(item);
-    });
-    farm.append(farmGrid);
+    const rows = [];
+    const esc = (value) => String(value).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+    const text = (x, y, size, value, color = '0.07 0.23 0.31') => {
+      rows.push(`BT /F1 ${size} Tf ${color} rg 1 0 0 1 ${x} ${y} Tm (${esc(value)}) Tj ET`);
+    };
+    const rect = (x, y, w, h, color) => rows.push(`q ${color} rg ${x} ${y} ${w} ${h} re f Q`);
+    const line = (x1, y1, x2, y2, color = '0.84 0.90 0.92') => rows.push(`q ${color} RG 0.7 w ${x1} ${y1} m ${x2} ${y2} l S Q`);
 
-    const power = element('section', 'reports-pdf-section');
-    power.append(element('h2', 'reports-pdf-section-title', 'POWER SUPPLY SUMMARY'));
-    const powerGrid = element('div', 'reports-pdf-power');
-    [['EB SUPPLY', ebHours, 'eb'], ['DG SUPPLY', dgHours, 'dg']].forEach(([label, hours, type]) => {
-      const card = element('div', 'reports-pdf-power-card ' + type);
-      card.append(element('div', 'reports-pdf-power-label', label), element('div', 'reports-pdf-power-hours', hours.toFixed(1) + ' Hrs'));
-      powerGrid.append(card);
-    });
-    power.append(powerGrid);
+    rect(0, 0, 595, 842, '1 1 1');
+    text(42, 797, 25, 'GI SMART POND', '0.03 0.55 0.53');
+    text(43, 781, 8, 'SMART AQUACULTURE MONITORING', '0.34 0.44 0.49');
+    line(42, 766, 553, 766, '0.03 0.55 0.53');
+    text(42, 735, 21, periodNames[selectedPeriod] + ' PERFORMANCE REPORT');
+    text(42, 715, 11, reportDate, '0.34 0.44 0.49');
 
-    const aerators = element('section', 'reports-pdf-section');
-    aerators.append(element('h2', 'reports-pdf-section-title', 'AERATOR RUNNING HOURS'));
-    const table = element('table', 'reports-pdf-table');
-    const thead = element('thead');
-    const headerRow = element('tr');
-    ['S.No', 'Equipment', 'Running Hours'].forEach((label) => headerRow.append(element('th', '', label)));
-    thead.append(headerRow);
-    const tbody = element('tbody');
+    text(42, 675, 14, 'FARM DETAILS');
+    rect(42, 585, 511, 72, '0.95 0.97 0.98');
+    text(57, 635, 8, 'FARM NAME', '0.34 0.44 0.49');
+    text(57, 615, 13, DEMO_DATA.farm.name);
+    text(310, 635, 8, 'POND ID', '0.34 0.44 0.49');
+    text(310, 615, 13, DEMO_DATA.farm.pondId);
+    text(57, 597, 8, 'LOCATION', '0.34 0.44 0.49');
+    text(57, 579, 11, DEMO_DATA.farm.location);
+    text(310, 597, 8, 'POND SIZE', '0.34 0.44 0.49');
+    text(310, 579, 11, DEMO_DATA.farm.pondSize);
+
+    text(42, 540, 14, 'POWER SUPPLY SUMMARY');
+    rect(42, 462, 247, 62, '0.91 0.97 0.94');
+    rect(306, 462, 247, 62, '0.92 0.96 0.99');
+    text(58, 503, 10, 'EB SUPPLY', '0.15 0.48 0.38');
+    text(58, 476, 22, ebHours.toFixed(1) + ' HRS');
+    text(322, 503, 10, 'DG SUPPLY', '0.15 0.42 0.68');
+    text(322, 476, 22, dgHours.toFixed(1) + ' HRS');
+
+    text(42, 423, 14, 'AERATOR RUNNING HOURS');
+    rect(42, 389, 511, 25, '0.07 0.23 0.31');
+    text(57, 398, 10, 'S.NO', '1 1 1');
+    text(150, 398, 10, 'EQUIPMENT', '1 1 1');
+    text(435, 398, 10, 'RUNNING HOURS', '1 1 1');
     for (let number = 1; number <= 10; number += 1) {
       const id = 'AERATOR_' + String(number).padStart(2, '0');
       const hours = hasCoverage ? getExportHours(id, reportWindow.start, reportWindow.end) : 0;
-      const row = element('tr');
-      row.append(
-        element('td', '', String(number).padStart(2, '0')),
-        element('td', '', 'Aerator ' + String(number).padStart(2, '0')),
-        element('td', '', hours.toFixed(1) + ' Hrs')
-      );
-      tbody.append(row);
+      const y = 389 - number * 27;
+      if (number % 2 === 0) rect(42, y, 511, 27, '0.95 0.97 0.98');
+      text(57, y + 9, 11, String(number).padStart(2, '0'));
+      text(150, y + 9, 11, 'Aerator ' + String(number).padStart(2, '0'));
+      text(450, y + 9, 11, hours.toFixed(1) + ' Hrs');
+      line(42, y, 553, y);
     }
-    table.append(thead, tbody);
-    aerators.append(table);
+    line(42, 92, 553, 92, '0.03 0.55 0.53');
+    text(42, 73, 10, 'Inspired by Godavari.', '0.03 0.55 0.53');
+    text(360, 73, 8, 'GI SMART POND  |  ' + reportDate, '0.34 0.44 0.49');
 
-    const footer = element('footer', 'reports-pdf-footer');
-    footer.append(element('strong', '', 'Inspired by Godavari.'), element('span', '', 'GI SMART POND · ' + reportDate));
-    doc.append(header, farm, power, aerators, footer);
-    document.head.append(style);
-    document.body.append(doc);
-    const cleanup = () => {
-      doc.remove();
-      style.remove();
-      window.removeEventListener('afterprint', cleanup);
-    };
-    window.addEventListener('afterprint', cleanup);
-    window.print();
-    window.setTimeout(cleanup, 120000);
+    const stream = rows.join('\n');
+    const objects = [
+      '<< /Type /Catalog /Pages 2 0 R >>',
+      '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+      '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>',
+      '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+      `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`
+    ];
+    let pdf = '%PDF-1.4\n';
+    const offsets = [0];
+    objects.forEach((object, index) => {
+      offsets.push(pdf.length);
+      pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+    });
+    const xref = pdf.length;
+    pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+    offsets.slice(1).forEach((offset) => { pdf += String(offset).padStart(10, '0') + ' 00000 n \n'; });
+    pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+    downloadFile(new Blob([pdf], { type: 'application/pdf' }), 'GI-SMART-POND-' + selectedPeriod.toUpperCase() + '-REPORT.pdf');
   });
 
   function downloadFile(blob, filename) {
