@@ -240,10 +240,10 @@ export function Reports() {
     activeSimulationSnapshot = snapshot;
     if (!snapshot || !Array.isArray(snapshot.allEvents)) return;
 
-    // Anchor simulation reports to the latest date in the uploaded data.
-    // This reports the complete available period before playback begins.
-    const window = getReportPeriodWindow(snapshot.endTime, selectedPeriod);
-    const dataStart = getISTDayWindow(snapshot.startTime).start;
+    // Report tabs always follow the real India calendar, not the playback cursor
+    // or the last date in the uploaded file. Uploaded data only limits coverage.
+    const window = getReportPeriodWindow(Date.now(), selectedPeriod);
+    const dataStart = snapshot.startTime;
     const dataEnd = getISTDayWindow(snapshot.endTime).end;
     const reportStart = Math.max(window.start, dataStart);
     const reportEnd = Math.min(window.end, dataEnd);
