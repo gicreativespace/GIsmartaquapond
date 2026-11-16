@@ -1184,3 +1184,441 @@
     font-size: 10px;
   }
 }
+
+
+/* =========================================
+   REPORTS DASHBOARD - PREMIUM LIGHT AQUA
+========================================= */
+
+.reports-page .page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reports-page-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 1px 0;
+}
+
+.reports-page .page-title {
+  color: var(--color-ocean);
+  font-size: 23px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.reports-page .page-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.reports-period-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  background: #E8F0F2;
+  border-radius: 13px;
+}
+
+.reports-period-button {
+  min-height: 36px;
+  border-radius: 10px;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.reports-period-button.active {
+  color: #FFFFFF;
+  background: var(--color-teal);
+  box-shadow: 0 2px 7px rgba(7, 141, 135, 0.16);
+}
+
+.reports-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.reports-metric-card {
+  min-width: 0;
+  min-height: 112px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 13px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 15px;
+  box-shadow: var(--shadow-card);
+}
+
+.reports-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.reports-metric-label {
+  color: var(--color-text-secondary);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.reports-metric-icon {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+}
+
+.reports-metric-icon.teal { color: var(--color-teal); }
+.reports-metric-icon.blue { color: #287BA8; }
+.reports-metric-icon.green { color: var(--color-running); }
+
+.reports-metric-value {
+  color: var(--color-ocean);
+  font-size: 25px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.reports-metric-unit {
+  color: var(--color-text-muted);
+  font-size: 9px;
+}
+
+.reports-section-card {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  min-width: 0;
+  padding: 15px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.reports-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reports-section-heading h2 {
+  color: var(--color-ocean);
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.reports-section-icon {
+  width: 19px;
+  height: 19px;
+  color: var(--color-teal);
+}
+
+.reports-section-tag {
+  padding: 4px 9px;
+  color: var(--color-teal);
+  background: #EAF6F4;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.reports-aerator-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.reports-aerator-row {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #EEF2F3;
+}
+
+.reports-aerator-row:last-child {
+  border-bottom: 0;
+}
+
+.reports-aerator-name {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+
+.reports-aerator-hours {
+  color: var(--color-ocean);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.reports-chart-placeholder {
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 12px;
+  background:
+    linear-gradient(to bottom, rgba(7, 141, 135, 0.025), rgba(40, 123, 168, 0.025)),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 35px, #EAF0F2 36px);
+  border: 1px dashed #DCE8EB;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.reports-chart-icon {
+  width: 27px;
+  height: 27px;
+  color: var(--color-teal);
+}
+
+.reports-chart-placeholder strong {
+  color: var(--color-ocean);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+}
+
+.reports-chart-placeholder span {
+  color: var(--color-text-muted);
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.reports-event-empty {
+  padding: 17px 12px;
+  color: var(--color-text-secondary);
+  background: #F7FAFB;
+  border-radius: 11px;
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.reports-data-note {
+  padding: 11px 12px;
+  color: #8A651F;
+  background: var(--color-warning-light);
+  border: 1px solid rgba(230, 162, 60, 0.2);
+  border-radius: 12px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.reports-export-section {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-bottom: 4px;
+}
+
+.reports-export-title {
+  color: var(--color-ocean);
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.reports-period-status {
+  color: var(--color-text-muted);
+  font-size: 9px;
+}
+
+.reports-export-card {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 13px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 15px;
+  box-shadow: var(--shadow-card);
+}
+
+.reports-export-row {
+  width: 100%;
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 0;
+  text-align: left;
+}
+
+.reports-export-row + .reports-export-row {
+  border-top: 1px solid var(--color-divider);
+}
+
+.reports-export-row:disabled {
+  opacity: 0.55;
+}
+
+.reports-export-icon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #FCEEEE;
+  color: var(--color-stopped);
+}
+
+.reports-export-row.excel .reports-export-icon {
+  color: #168A56;
+  background: #EAF5EE;
+}
+
+.reports-export-row.poster .reports-export-icon {
+  color: #287BA8;
+  background: #EAF3F8;
+}
+
+.reports-export-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.reports-export-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.reports-export-copy strong {
+  color: var(--color-ocean);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+}
+
+.reports-export-copy small {
+  color: var(--color-text-secondary);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.reports-export-action {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  color: var(--color-text-secondary);
+}
+
+.reports-export-row.poster .reports-export-action {
+  color: var(--color-teal);
+}
+
+.reports-export-row:active {
+  opacity: 0.72;
+}
+
+.reports-export-status {
+  min-height: 15px;
+  color: var(--color-text-secondary);
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+/* PDF print sheet */
+.reports-print-sheet {
+  display: none;
+}
+
+@media (min-width: 520px) {
+  .reports-metric-grid {
+    gap: 12px;
+  }
+
+  .reports-metric-card {
+    min-height: 120px;
+    padding: 15px;
+  }
+
+  .reports-aerator-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+}
+
+@media print {
+  body {
+    background: #FFFFFF !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .reports-page.is-printing .reports-print-sheet,
+  .reports-page.is-printing .reports-print-sheet * {
+    visibility: visible !important;
+  }
+
+  .reports-page.is-printing .reports-print-sheet {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    padding: 28px;
+    color: #123B50;
+    background: #FFFFFF;
+  }
+
+  .reports-print-brand {
+    margin-bottom: 12px;
+    color: #078D87;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .reports-print-sheet h1 {
+    margin-bottom: 8px;
+    color: #123B50;
+    font-size: 25px;
+  }
+
+  .reports-print-farm,
+  .reports-print-range,
+  .reports-print-note {
+    margin-bottom: 8px;
+    color: #66808B;
+    font-size: 11px;
+  }
+
+  .reports-print-table {
+    width: 100%;
+    margin: 22px 0;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .reports-print-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #E5ECEF;
+  }
+
+  .reports-print-table td:last-child {
+    text-align: right;
+    font-weight: 600;
+  }
+}
