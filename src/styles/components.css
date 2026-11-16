@@ -1792,3 +1792,287 @@
     animation: none;
   }
 }
+
+
+/* =========================================
+   SETTINGS PAGE - PREMIUM AQUA SURFACES
+========================================= */
+
+.settings-page .page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.settings-page-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px 1px 1px;
+}
+
+.settings-eyebrow {
+  color: var(--color-teal);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.1em;
+}
+
+.settings-page .page-title {
+  color: var(--color-ocean);
+  font-size: 23px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.settings-page .page-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.settings-farm-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid #DDEBEA;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F0F8F7 100%);
+  box-shadow: var(--shadow-card);
+}
+
+.settings-farm-icon,
+.settings-section-icon,
+.setting-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: var(--color-teal);
+  background: #E8F5F3;
+}
+
+.settings-farm-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 15px;
+}
+
+.settings-farm-icon svg {
+  width: 23px;
+  height: 23px;
+}
+
+.settings-farm-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.settings-farm-label {
+  color: #82949A;
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.09em;
+}
+
+.settings-farm-name {
+  overflow: hidden;
+  color: var(--color-ocean);
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-farm-location {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.settings-farm-status {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: var(--color-running);
+  background: var(--color-running-light);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+}
+
+.settings-section {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--color-border);
+  border-radius: 17px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.settings-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding-bottom: 13px;
+}
+
+.settings-section-icon {
+  width: 39px;
+  height: 39px;
+  border-radius: 13px;
+}
+
+.settings-section-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.settings-section-heading-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.settings-section-title {
+  color: var(--color-ocean);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.settings-section-description {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.settings-section-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 67px;
+  padding: 10px 0;
+  border-top: 1px solid #EDF2F3;
+}
+
+.setting-item-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 11px;
+  background: #F1F7F8;
+  color: #287EAD;
+}
+
+.setting-item-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.setting-item-details {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.setting-item-title {
+  color: var(--color-ocean);
+  font-size: 13px;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.35;
+}
+
+.setting-item-description {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.setting-item-arrow {
+  flex: 0 0 auto;
+  color: #91A4AA;
+  font-size: 23px;
+  line-height: 1;
+}
+
+/* Footer signature is the deliberate contact entry point. */
+.brand-footer {
+  margin-top: 16px;
+  padding: 12px 8px calc(10px + env(safe-area-inset-bottom));
+}
+
+.brand-footer-trigger {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 180px;
+  min-height: 38px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.brand-footer-trigger:active {
+  transform: scale(0.98);
+  background: rgba(7, 141, 135, 0.055);
+}
+
+.brand-footer-credit {
+  font-size: 12px;
+  font-weight: var(--font-weight-medium);
+}
+
+.brand-footer-tagline {
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+}
+
+.brand-contact-dialog {
+  padding: 28px 22px 24px;
+}
+
+.brand-contact-dialog p {
+  font-size: 13px;
+}
+
+/* Readability pass: keep secondary information comfortably legible. */
+.header-tagline { font-size: 10px; }
+.farm-meta-label,
+.supply-source-row span,
+.reports-metric-unit,
+.reports-period-status,
+.reports-export-status,
+.reports-chart-placeholder span,
+.reports-export-copy small { font-size: 11px; }
+.equipment-card-description,
+.bottom-nav-label,
+.equipment-status,
+.aerator-feedback,
+.aerator-detail-card .equipment-status { font-size: 11px; }
+.reports-metric-label,
+.reports-aerator-name,
+.reports-aerator-hours,
+.reports-section-tag,
+.reports-chart-placeholder strong,
+.reports-event-empty,
+.reports-data-note { font-size: 12px; }
+.reports-export-copy strong { font-size: 13px; }
+.supply-source-row strong,
+.supply-feedback,
+.power-monitoring-note p { font-size: 11px; }
