@@ -5,6 +5,8 @@
 
 import { Header } from '../components/Header.js';
 import { BottomNavigation } from '../components/BottomNavigation.js';
+import { FarmDetails } from '../components/FarmDetails.js';
+import { DEMO_DATA } from '../data/demoData.js';
 import { parsePondData, getSimulationSnapshot, formatSimulationTime } from '../data/simulationEngine.js';
 import { setDataProvider, publishPondSnapshot } from '../data/dataProvider.js';
 
@@ -91,7 +93,7 @@ export function Simulation() {
   const historyList = element('div', 'simulation-event-list');
   historyCard.append(historyHead, historyList);
 
-  content.append(intro, sourceCard, controlCard, statusCard, historyCard);
+  content.append(FarmDetails(DEMO_DATA.farm), intro, sourceCard, controlCard, statusCard, historyCard);
   page.append(Header(), content, BottomNavigation(''));
   
   let simulation = null;
