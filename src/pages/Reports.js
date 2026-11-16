@@ -246,8 +246,12 @@ export function Reports() {
       : rangeStartLabel + ' – ' + rangeEndLabel;
 
     const showDailyDetails = selectedPeriod === 'today' || selectedPeriod === 'tomorrow';
+    // Set display explicitly as well as hidden to avoid layout CSS overriding
+    // the native hidden attribute on cached/mobile browsers.
     aeratorSection.hidden = !showDailyDetails;
     eventsSection.hidden = !showDailyDetails;
+    aeratorSection.style.display = showDailyDetails ? 'flex' : 'none';
+    eventsSection.style.display = showDailyDetails ? 'flex' : 'none';
 
     ['EB', 'DG'].forEach((id) => {
       const card = page.querySelector('.reports-power-item[data-equipment-id="' + id + '"]');
