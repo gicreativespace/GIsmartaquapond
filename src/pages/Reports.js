@@ -170,6 +170,7 @@ export function Reports() {
         tab.classList.toggle('active', active);
         tab.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
+      syncReportSections();
       if (activeSimulationSnapshot) renderSimulationReport(activeSimulationSnapshot);
       else dateLabel.textContent = period.label + ' · ' + getISTDateLabel(period.id === 'tomorrow' ? 1 : 0);
     });
@@ -226,6 +227,15 @@ export function Reports() {
 
   page.append(Header(), content, BottomNavigation('reports'));
 
+  function syncReportSections() {
+    const showDailyDetails = selectedPeriod === 'today' || selectedPeriod === 'tomorrow';
+    aeratorSection.remove();
+    eventsSection.remove();
+    if (showDailyDetails) content.append(aeratorSection, eventsSection);
+  }
+
+  syncReportSections();
+
   function renderSimulationReport(snapshot) {
     activeSimulationSnapshot = snapshot;
     if (!snapshot || !Array.isArray(snapshot.allEvents)) return;
@@ -244,14 +254,6 @@ export function Reports() {
     dateLabel.textContent = selectedPeriod === 'today' || selectedPeriod === 'tomorrow'
       ? periodLabels[selectedPeriod] + ' · ' + rangeEndLabel
       : rangeStartLabel + ' – ' + rangeEndLabel;
-
-    const showDailyDetails = selectedPeriod === 'today' || selectedPeriod === 'tomorrow';
-    // Set display explicitly as well as hidden to avoid layout CSS overriding
-    // the native hidden attribute on cached/mobile browsers.
-    aeratorSection.hidden = !showDailyDetails;
-    eventsSection.hidden = !showDailyDetails;
-    aeratorSection.style.display = showDailyDetails ? 'flex' : 'none';
-    eventsSection.style.display = showDailyDetails ? 'flex' : 'none';
 
     ['EB', 'DG'].forEach((id) => {
       const card = page.querySelector('.reports-power-item[data-equipment-id="' + id + '"]');
