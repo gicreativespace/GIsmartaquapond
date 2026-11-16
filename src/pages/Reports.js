@@ -230,7 +230,21 @@ export function Reports() {
   });
   exportSection.append(exportHeading, exportActions);
 
-  pdfButton.addEventListener('click', () => window.print());
+  pdfButton.addEventListener('click', () => {
+    const restore = [];
+    page.querySelectorAll('.reports-power-hours, .reports-aerator-hours').forEach((node) => {
+      if (node.textContent.trim() === '-- hrs') {
+        restore.push([node, node.textContent]);
+        node.textContent = '0.0 hrs';
+      }
+    });
+    const restoreAfterPrint = () => {
+      restore.forEach(([node, value]) => { node.textContent = value; });
+      window.removeEventListener('afterprint', restoreAfterPrint);
+    };
+    window.addEventListener('afterprint', restoreAfterPrint);
+    window.print();
+  });
 
   function downloadFile(blob, filename) {
     const url = URL.createObjectURL(blob);
@@ -523,7 +537,7 @@ export function Reports() {
         ? calculateRuntimeHours(snapshot, id, reportStart, reportEnd)
         : null;
       card.querySelector('.reports-power-hours').textContent =
-        hours === null ? '-- hrs' : hours.toFixed(1) + ' hrs';
+        hours === null ? '0.0 hrs' : hours.toFixed(1) + ' hrs';
     });
 
     for (let number = 1; number <= 10; number += 1) {
