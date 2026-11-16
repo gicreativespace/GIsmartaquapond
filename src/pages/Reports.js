@@ -93,14 +93,26 @@ function createAeratorRow(number) {
 }
 
 
-function getSimulationDayWindow(timestamp, offsetDays) {
+function getSimulationPeriodWindow(timestamp, days) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit'
   }).formatToParts(new Date(timestamp));
   const values = {};
   parts.forEach((part) => { if (part.type !== 'literal') values[part.type] = Number(part.value); });
-  const start = Date.UTC(values.year, values.month - 1, values.day + offsetDays) - (330 * 60000);
-  return { start, end: start + 86400000 };
+  const todayStart = Date.UTC(values.year, values.month - 1, values.day) - (330 * 60000);
+  return { start: todayStart - ((days - 1) * 86400000), end: todayStart + 86400000 };
+}
+
+function formatReportDate(timestamp) {
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric'
+  }).format(new Date(timestamp + 12 * 60 * 60 * 1000));
+}
+
+function formatEventTime(timestamp) {
+  return new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+  }).format(new Date(timestamp));
 }
 
 export function Reports() {
@@ -113,8 +125,8 @@ export function Reports() {
     element('p', 'page-subtitle', 'Daily power and aerator summary')
   );
 
-  let selectedDay = 'today';
-  let selectedOffset = 0;
+  let selectedPeriod = 'today';
+  let selectedDays = 1;
   let activeSimulationSnapshot = null;
   const dateLabel = element('p', 'reports-date-label', getISTDateLabel(0));
 
@@ -124,25 +136,26 @@ export function Reports() {
 
   const tabButtons = new Map();
   [
-    { id: 'today', label: 'Today', offset: 0 },
-    { id: 'yesterday', label: 'Yesterday', offset: -1 }
-  ].forEach((day) => {
+    { id: 'today', label: 'Today', days: 1 },
+    { id: '7days', label: '7 Days', days: 7 },
+    { id: '30days', label: '30 Days', days: 30 }
+  ].forEach((period) => {
     const button = element('button', 'reports-day-button', day.label);
     button.type = 'button';
-    button.setAttribute('aria-pressed', day.id === selectedDay ? 'true' : 'false');
-    if (day.id === selectedDay) button.classList.add('active');
+    button.setAttribute('aria-pressed', period.id === selectedPeriod ? 'true' : 'false');
+    if (day.id === selectedPeriod) button.classList.add('active');
     button.addEventListener('click', () => {
-      selectedDay = day.id;
-      selectedOffset = day.offset;
+      selectedPeriod = period.id;
+      selectedDays = period.days;
       tabButtons.forEach((tab, id) => {
         const active = id === selectedDay;
         tab.classList.toggle('active', active);
         tab.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
       if (activeSimulationSnapshot) renderSimulationReport(activeSimulationSnapshot);
-      else dateLabel.textContent = getISTDateLabel(day.offset);
+      else dateLabel.textContent = period.label + ' · ' + getISTDateLabel(0);
     });
-    tabButtons.set(day.id, button);
+    tabButtons.set(period.id, button);
     tabs.append(button);
   });
 
@@ -172,13 +185,25 @@ export function Reports() {
   }
   aeratorSection.append(aeratorHeading, aeratorList);
 
+  const eventsSection = element('section', 'reports-summary-card');
+  const eventsHeading = element('div', 'reports-summary-heading');
+  eventsHeading.append(
+    createIcon('clock', 'reports-heading-icon'),
+    element('h2', '', 'Events History'),
+    element('span', 'reports-unit-count reports-event-count', '0 Events')
+  );
+  const eventsList = element('div', 'reports-event-list');
+  eventsList.append(element('p', 'reports-event-empty', 'Simulation events will appear here.'));
+  eventsSection.append(eventsHeading, eventsList);
+
   content.append(
     FarmDetails(DEMO_DATA.farm),
     intro,
     tabs,
     dateLabel,
     powerSection,
-    aeratorSection
+    aeratorSection,
+    eventsSection
   );
 
   page.append(Header(), content, BottomNavigation('reports'));
@@ -186,24 +211,59 @@ export function Reports() {
   function renderSimulationReport(snapshot) {
     activeSimulationSnapshot = snapshot;
     if (!snapshot || !Array.isArray(snapshot.allEvents)) return;
-    const window = getSimulationDayWindow(snapshot.currentTime, selectedOffset);
-    dateLabel.textContent = new Intl.DateTimeFormat('en-IN', {
-      timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric'
-    }).format(new Date(window.start + 12 * 60 * 60 * 1000));
-    const reportEnd = Math.min(window.end, Math.max(window.start, snapshot.currentTime + 1));
+
+    const window = getSimulationPeriodWindow(snapshot.currentTime, selectedDays);
+    const reportStart = Math.max(window.start, snapshot.startTime);
+    const reportEnd = Math.min(window.end, snapshot.currentTime + 1);
+    const hasCoverage = reportEnd > reportStart;
+    const rangeStartLabel = formatReportDate(window.start);
+    const rangeEndLabel = formatReportDate(Math.min(window.end - 1, snapshot.currentTime));
+    dateLabel.textContent = selectedDays === 1
+      ? 'Today · ' + rangeEndLabel
+      : rangeStartLabel + ' – ' + rangeEndLabel + ' · ' + selectedDays + ' days';
+
     ['EB', 'DG'].forEach((id) => {
       const card = page.querySelector('.reports-power-item[data-equipment-id="' + id + '"]');
       if (!card) return;
-      const hours = calculateRuntimeHours(snapshot, id, window.start, reportEnd);
-      card.querySelector('.reports-power-hours').textContent = hours.toFixed(1) + ' hrs';
+      const hours = hasCoverage
+        ? calculateRuntimeHours(snapshot, id, reportStart, reportEnd)
+        : null;
+      card.querySelector('.reports-power-hours').textContent =
+        hours === null ? '-- hrs' : hours.toFixed(1) + ' hrs';
     });
+
     for (let number = 1; number <= 10; number += 1) {
       const id = 'AERATOR_' + String(number).padStart(2, '0');
       const row = page.querySelector('.reports-aerator-row[data-equipment-id="' + id + '"]');
       if (!row) continue;
-      const hours = calculateRuntimeHours(snapshot, id, window.start, reportEnd);
-      row.querySelector('.reports-aerator-hours').textContent = hours.toFixed(1) + ' hrs';
-      row.querySelector('.reports-aerator-fill').style.width = Math.min(100, (hours / 24) * 100) + '%';
+      const hours = hasCoverage
+        ? calculateRuntimeHours(snapshot, id, reportStart, reportEnd)
+        : null;
+      row.querySelector('.reports-aerator-hours').textContent =
+        hours === null ? '-- hrs' : hours.toFixed(1) + ' hrs';
+      row.querySelector('.reports-aerator-fill').style.width =
+        hours === null ? '0%' : Math.min(100, (hours / Math.max(1, selectedDays * 24)) * 100) + '%';
+    }
+
+    const visibleEvents = snapshot.allEvents.filter((event) =>
+      event.time >= reportStart && event.time < reportEnd
+    );
+    const eventCount = page.querySelector('.reports-event-count');
+    eventCount.textContent = visibleEvents.length + ' Events';
+    eventsList.replaceChildren();
+    if (!visibleEvents.length) {
+      eventsList.append(element('p', 'reports-event-empty', 'No events recorded in this period.'));
+    } else {
+      visibleEvents.slice(-30).reverse().forEach((event) => {
+        const row = element('div', 'reports-event-row');
+        const equipment = event.id.replace('AERATOR_', 'AERATOR ');
+        row.append(
+          element('span', 'reports-event-time', formatEventTime(event.time)),
+          element('span', 'reports-event-equipment', equipment),
+          element('strong', 'reports-event-state ' + (event.state === 'ON' ? 'is-on' : 'is-off'), event.state)
+        );
+        eventsList.append(row);
+      });
     }
   }
 
