@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'gi-smart-pond-v1';
+const CACHE_NAME = 'gi-smart-pond-v2';
 const APP_SHELL = [
   './',
   './index.html'
@@ -87,23 +87,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Network first so new deployments replace stale CSS/JS immediately.
   event.respondWith(
-    caches.match(request).then(async (cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      const response = await fetch(request);
-
-      if (response.ok) {
-        const copy = response.clone();
-
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, copy);
-        });
-      }
-
-      return response;
-    })
+    fetch(request)
+      .then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, copy);
+          });
+        }
+        return response;
+      })
+      .catch(async () => {
+        return (await caches.match(request)) || Response.error();
+      })
   );
 });
