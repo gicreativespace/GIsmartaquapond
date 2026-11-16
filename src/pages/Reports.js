@@ -12,6 +12,8 @@ import { Header } from '../components/Header.js';
 import { FarmDetails } from '../components/FarmDetails.js';
 import { BottomNavigation } from '../components/BottomNavigation.js';
 import { DEMO_DATA } from '../data/demoData.js';
+import { subscribeToPondData } from '../data/dataProvider.js';
+import { calculateRuntimeHours } from '../data/simulationEngine.js';
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -70,6 +72,7 @@ function getISTDateLabel(dayOffset) {
 
 function createPowerCard(label, type, iconName) {
   const card = element('div', 'reports-power-item ' + type);
+  card.dataset.equipmentId = type.toUpperCase();
   const heading = element('div', 'reports-power-item-heading');
   heading.append(createIcon(iconName), element('span', '', label));
   card.append(heading, element('strong', 'reports-power-hours', '-- hrs'));
@@ -78,6 +81,7 @@ function createPowerCard(label, type, iconName) {
 
 function createAeratorRow(number) {
   const row = element('div', 'reports-aerator-row');
+  row.dataset.equipmentId = 'AERATOR_' + String(number).padStart(2, '0');
   const name = element('span', 'reports-aerator-name', 'A' + String(number).padStart(2, '0'));
   const track = element('div', 'reports-aerator-track');
   const fill = element('div', 'reports-aerator-fill');
@@ -86,6 +90,17 @@ function createAeratorRow(number) {
   const hours = element('strong', 'reports-aerator-hours', '-- hrs');
   row.append(name, track, hours);
   return row;
+}
+
+
+function getSimulationDayWindow(timestamp, offsetDays) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(new Date(timestamp));
+  const values = {};
+  parts.forEach((part) => { if (part.type !== 'literal') values[part.type] = Number(part.value); });
+  const start = Date.UTC(values.year, values.month - 1, values.day + offsetDays) - (330 * 60000);
+  return { start, end: start + 86400000 };
 }
 
 export function Reports() {
@@ -99,6 +114,8 @@ export function Reports() {
   );
 
   let selectedDay = 'today';
+  let selectedOffset = 0;
+  let activeSimulationSnapshot = null;
   const dateLabel = element('p', 'reports-date-label', getISTDateLabel(0));
 
   const tabs = element('div', 'reports-day-tabs');
@@ -116,12 +133,14 @@ export function Reports() {
     if (day.id === selectedDay) button.classList.add('active');
     button.addEventListener('click', () => {
       selectedDay = day.id;
+      selectedOffset = day.offset;
       tabButtons.forEach((tab, id) => {
         const active = id === selectedDay;
         tab.classList.toggle('active', active);
         tab.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
-      dateLabel.textContent = getISTDateLabel(day.offset);
+      if (activeSimulationSnapshot) renderSimulationReport(activeSimulationSnapshot);
+      else dateLabel.textContent = getISTDateLabel(day.offset);
     });
     tabButtons.set(day.id, button);
     tabs.append(button);
@@ -163,5 +182,32 @@ export function Reports() {
   );
 
   page.append(Header(), content, BottomNavigation('reports'));
+
+  function renderSimulationReport(snapshot) {
+    activeSimulationSnapshot = snapshot;
+    if (!snapshot || !Array.isArray(snapshot.allEvents)) return;
+    const window = getSimulationDayWindow(snapshot.currentTime, selectedOffset);
+    dateLabel.textContent = new Intl.DateTimeFormat('en-IN', {
+      timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric'
+    }).format(new Date(window.start + 12 * 60 * 60 * 1000));
+    ['EB', 'DG'].forEach((id) => {
+      const card = page.querySelector('.reports-power-item[data-equipment-id="' + id + '"]');
+      if (!card) return;
+      const hours = calculateRuntimeHours(snapshot, id, window.start, window.end);
+      card.querySelector('.reports-power-hours').textContent = hours.toFixed(1) + ' hrs';
+    });
+    for (let number = 1; number <= 10; number += 1) {
+      const id = 'AERATOR_' + String(number).padStart(2, '0');
+      const row = page.querySelector('.reports-aerator-row[data-equipment-id="' + id + '"]');
+      if (!row) continue;
+      const hours = calculateRuntimeHours(snapshot, id, window.start, window.end);
+      row.querySelector('.reports-aerator-hours').textContent = hours.toFixed(1) + ' hrs';
+      row.querySelector('.reports-aerator-fill').style.width = Math.min(100, (hours / 24) * 100) + '%';
+    }
+  }
+
+  subscribeToPondData((snapshot) => {
+    if (snapshot && Array.isArray(snapshot.allEvents)) renderSimulationReport(snapshot);
+  });
   return page;
 }
