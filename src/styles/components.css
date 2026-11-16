@@ -3164,3 +3164,80 @@
   .simulation-aerator-tile { padding:8px 1px; }
   .simulation-aerator-name,.simulation-aerator-state { font-size:10px; }
 }
+
+
+/* Simulation-backed report period and event history */
+.reports-day-tabs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.reports-event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.reports-event-row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) 40px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.reports-event-row:last-child {
+  border-bottom: 0;
+}
+
+.reports-event-time {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.reports-event-equipment {
+  overflow: hidden;
+  color: var(--color-ocean);
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reports-event-state {
+  justify-self: end;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.reports-event-state.is-on {
+  color: var(--color-running);
+}
+
+.reports-event-state.is-off {
+  color: #D9534F;
+}
+
+.reports-event-empty {
+  margin: 0;
+  padding: 10px 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 359px) {
+  .reports-event-row {
+    grid-template-columns: 78px minmax(0, 1fr) 34px;
+    gap: 6px;
+  }
+  .reports-event-time,
+  .reports-event-equipment,
+  .reports-event-state {
+    font-size: 10px;
+  }
+}
