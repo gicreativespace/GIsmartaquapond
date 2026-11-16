@@ -9,6 +9,7 @@
 import { Header } from '../components/Header.js';
 import { BottomNavigation } from '../components/BottomNavigation.js';
 import { DEMO_DATA } from '../data/demoData.js';
+import { subscribeToPondData } from '../data/dataProvider.js';
 
 function createPowerIcon(kind) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -34,6 +35,7 @@ function createPowerIcon(kind) {
 function createSupplyCard({ title, description, isOn, source, kind }) {
   const card = document.createElement('section');
   card.className = `supply-detail-card ${isOn ? 'is-on' : 'is-off'}`;
+  card.dataset.equipmentId = kind === 'eb' ? 'EB' : 'DG';
 
   const top = document.createElement('div');
   top.className = 'supply-card-top';
@@ -162,5 +164,22 @@ export function Power() {
   content.append(intro, sectionHeading, supplySection, note);
 
   page.append(Header(), content, BottomNavigation('power'));
+
+  subscribeToPondData((snapshot) => {
+    if (!snapshot || !snapshot.status) return;
+    ['EB', 'DG'].forEach((id) => {
+      const card = page.querySelector('.supply-detail-card[data-equipment-id="' + id + '"]');
+      if (!card) return;
+      const isOn = snapshot.status[id] === 'ON';
+      card.classList.toggle('is-on', isOn);
+      card.classList.toggle('is-off', !isOn);
+      const feedback = card.querySelector('.supply-feedback');
+      const badge = card.querySelector('.supply-state-badge');
+      const source = card.querySelector('.supply-source-row strong');
+      if (feedback) feedback.textContent = isOn ? 'Voltage Available' : 'Voltage Not Available';
+      if (badge) badge.textContent = isOn ? 'ON' : 'OFF';
+      if (source) source.textContent = 'Simulation TXT file';
+    });
+  });
   return page;
 }
