@@ -2754,3 +2754,121 @@
   .home-page .equipment-subtitle { font-size: 12px !important; }
   .bottom-nav-label { font-size: 11px !important; }
 }
+
+
+/* =========================================
+   GI SMART POND — APPROVED PREMIUM READABILITY
+   Consistent typography across Home and all dashboards
+========================================= */
+#app {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Shared page hierarchy */
+.page-title,
+.power-page .page-title,
+.aerators-page .page-title,
+.reports-page .page-title,
+.settings-page .page-title {
+  font-size: 24px !important;
+  line-height: 1.22;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+.page-subtitle,
+.power-page .page-subtitle,
+.aerators-page .page-subtitle,
+.reports-page .page-subtitle,
+.settings-page .page-subtitle {
+  font-size: 14px !important;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+/* Home — keep the approved layout and improve legibility only */
+.header-title { font-size: 18px !important; }
+.header-tagline { font-size: 11px !important; }
+.home-page .farm-name { font-size: 17px !important; }
+.home-page .farm-location { font-size: 14px !important; }
+.home-page .farm-meta-label { font-size: 12px !important; }
+.home-page .farm-meta-value { font-size: 14px !important; }
+.home-page .home-power-heading h2 { font-size: 16px !important; }
+.home-page .home-power-link { font-size: 13px !important; }
+.home-page .home-supply-label { font-size: 12px !important; }
+.home-page .home-supply-status { font-size: 21px !important; }
+.home-page .home-supply-note,
+.home-page .home-power-footnote { font-size: 12px !important; line-height: 1.4; }
+.home-page .equipment-card-title,
+.home-page .equipment-title { font-size: 15px !important; line-height: 1.25; }
+.home-page .equipment-card-description,
+.home-page .equipment-subtitle { font-size: 12px !important; line-height: 1.35; }
+.home-page .equipment-status,
+.home-page .status-badge { font-size: 12px !important; }
+
+/* Power dashboard */
+.power-eyebrow,
+.power-section-heading h2,
+.power-section-heading span,
+.supply-source-row span { font-size: 12px !important; }
+.supply-detail-title { font-size: 16px !important; }
+.supply-detail-description,
+.supply-feedback,
+.supply-source-row strong { font-size: 13px !important; line-height: 1.4; }
+.supply-state-badge { font-size: 12px !important; }
+.power-monitoring-note strong,
+.power-monitoring-note p { font-size: 13px !important; line-height: 1.5; }
+
+/* Aerators dashboard */
+.aerator-summary-total { font-size: 21px !important; }
+.aerator-summary-breakdown { font-size: 14px !important; }
+.aerator-detail-name { font-size: 15px !important; }
+.aerator-detail-card .equipment-status { font-size: 12px !important; }
+.aerator-feedback,
+.aerator-monitoring-note { font-size: 13px !important; line-height: 1.5; }
+
+/* Reports dashboard — readable metrics, history and export controls */
+.reports-period-button { font-size: 13px !important; }
+.reports-metric-label,
+.reports-aerator-name,
+.reports-aerator-hours,
+.reports-section-tag { font-size: 13px !important; line-height: 1.35; }
+.reports-metric-value { font-size: 23px !important; line-height: 1.2; }
+.reports-metric-unit,
+.reports-period-status { font-size: 12px !important; }
+.reports-section-heading h2,
+.reports-export-title { font-size: 16px !important; line-height: 1.3; }
+.reports-chart-placeholder strong,
+.reports-event-empty,
+.reports-data-note { font-size: 13px !important; line-height: 1.5; }
+.reports-chart-placeholder span,
+.reports-export-copy small,
+.reports-export-status { font-size: 12px !important; line-height: 1.45; }
+.reports-export-copy strong { font-size: 14px !important; }
+
+/* Settings dashboard */
+.settings-eyebrow,
+.settings-farm-label,
+.settings-farm-status { font-size: 12px !important; }
+.settings-farm-name { font-size: 17px !important; }
+.settings-farm-location { font-size: 14px !important; }
+.settings-section-title { font-size: 16px !important; }
+.settings-section-description,
+.setting-item-description { font-size: 13px !important; line-height: 1.5; }
+.setting-item-title { font-size: 15px !important; }
+
+/* Navigation and footer */
+.bottom-nav-label { font-size: 12px !important; line-height: 1.2; }
+.brand-footer-credit { font-size: 12px; }
+.brand-footer-tagline { font-size: 11px; }
+
+/* Compact phones: preserve legibility without overflow */
+@media (max-width: 359px) {
+  .page-title,
+  .power-page .page-title,
+  .aerators-page .page-title,
+  .reports-page .page-title,
+  .settings-page .page-title { font-size: 22px !important; }
+  .bottom-nav-label { font-size: 11px !important; }
+  .home-page .equipment-card-title,
+  .home-page .equipment-title { font-size: 14px !important; }
+}
