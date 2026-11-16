@@ -110,7 +110,7 @@ function getISTDayWindow(timestamp) {
 
 function getReportPeriodWindow(timestamp, period) {
   const day = getISTDayWindow(timestamp);
-  if (period === 'tomorrow') return { start: day.end, end: day.end + 86400000 };
+  if (period === 'yesterday') return { start: day.start - 86400000, end: day.start };
   if (period === 'week') return { start: day.start - (6 * 86400000), end: day.end };
   if (period === 'month') {
     const values = getISTDateParts(timestamp);
@@ -155,7 +155,7 @@ export function Reports() {
   const tabButtons = new Map();
   [
     { id: 'today', label: 'Today' },
-    { id: 'tomorrow', label: 'Tomorrow' },
+    { id: 'yesterday', label: 'Yesterday' },
     { id: 'week', label: 'Week' },
     { id: 'month', label: 'Month' }
   ].forEach((period) => {
@@ -172,7 +172,7 @@ export function Reports() {
       });
       syncReportSections();
       if (activeSimulationSnapshot) renderSimulationReport(activeSimulationSnapshot);
-      else dateLabel.textContent = period.label + ' · ' + getISTDateLabel(period.id === 'tomorrow' ? 1 : 0);
+      else dateLabel.textContent = period.label + ' · ' + getISTDateLabel(period.id === 'yesterday' ? -1 : 0);
     });
     tabButtons.set(period.id, button);
     tabs.append(button);
@@ -228,7 +228,7 @@ export function Reports() {
   page.append(Header(), content, BottomNavigation('reports'));
 
   function syncReportSections() {
-    const showDailyDetails = selectedPeriod === 'today' || selectedPeriod === 'tomorrow';
+    const showDailyDetails = selectedPeriod === 'today' || selectedPeriod === 'yesterday';
     aeratorSection.remove();
     eventsSection.remove();
     if (showDailyDetails) content.append(aeratorSection, eventsSection);
@@ -250,8 +250,8 @@ export function Reports() {
     const hasCoverage = reportEnd > reportStart;
     const rangeStartLabel = formatReportDate(reportStart);
     const rangeEndLabel = hasCoverage ? formatReportDate(reportEnd - 1) : formatReportDate(window.start);
-    const periodLabels = { today: 'Today', tomorrow: 'Tomorrow', week: 'Week', month: 'Month' };
-    dateLabel.textContent = selectedPeriod === 'today' || selectedPeriod === 'tomorrow'
+    const periodLabels = { today: 'Today', yesterday: 'Yesterday', week: 'Week', month: 'Month' };
+    dateLabel.textContent = selectedPeriod === 'today' || selectedPeriod === 'yesterday'
       ? periodLabels[selectedPeriod] + ' · ' + rangeEndLabel
       : rangeStartLabel + ' – ' + rangeEndLabel;
 
