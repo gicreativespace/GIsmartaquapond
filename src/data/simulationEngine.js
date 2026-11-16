@@ -154,19 +154,25 @@ export function formatSimulationTime(timestamp) {
 /** Calculate ON duration inside a selected time window. */
 export function calculateRuntimeHours(snapshot, equipmentId, windowStart, windowEnd) {
   if (!snapshot?.initialStatus || !Array.isArray(snapshot.allEvents)) return null;
+  // INITIAL_STATUS is valid from the first recorded simulation timestamp,
+  // not from midnight before the uploaded data begins.
+  const effectiveStart = Math.max(windowStart, snapshot.startTime ?? windowStart);
+  const effectiveEnd = Math.min(windowEnd, (snapshot.endTime ?? windowEnd) + 1);
+  if (effectiveEnd <= effectiveStart) return 0;
+
   let state = snapshot.initialStatus[equipmentId] || 'OFF';
-  let cursor = windowStart;
+  let cursor = effectiveStart;
   let duration = 0;
   snapshot.allEvents.forEach((event) => {
-    if (event.time < windowStart) {
-      state = event.id === equipmentId ? event.state : state;
+    if (event.time < effectiveStart) {
+      if (event.id === equipmentId) state = event.state;
       return;
     }
-    if (event.time >= windowEnd) return;
+    if (event.time >= effectiveEnd) return;
     if (state === 'ON') duration += Math.max(0, event.time - cursor);
     if (event.id === equipmentId) state = event.state;
     cursor = event.time;
   });
-  if (state === 'ON') duration += Math.max(0, windowEnd - cursor);
+  if (state === 'ON') duration += Math.max(0, effectiveEnd - cursor);
   return Math.round((duration / 3600000) * 10) / 10;
 }
