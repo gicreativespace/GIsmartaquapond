@@ -215,6 +215,125 @@ export function Reports() {
   eventsList.append(element('p', 'reports-event-empty', 'Simulation events will appear here.'));
   eventsSection.append(eventsHeading, eventsList);
 
+  const exportSection = element('section', 'reports-summary-card reports-export-section');
+  const exportHeading = element('div', 'reports-summary-heading');
+  exportHeading.append(
+    createIcon('clock', 'reports-heading-icon'),
+    element('h2', '', 'Export Reports')
+  );
+  const exportActions = element('div', 'reports-export-actions');
+  const pdfButton = element('button', 'reports-export-button', 'PDF');
+  const csvButton = element('button', 'reports-export-button', 'Excel / CSV');
+  const posterButton = element('button', 'reports-export-button', 'Poster PNG');
+  [pdfButton, csvButton, posterButton].forEach((button) => {
+    button.type = 'button';
+    exportActions.append(button);
+  });
+  exportSection.append(exportHeading, exportActions);
+
+  pdfButton.addEventListener('click', () => window.print());
+
+  function downloadFile(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = element('a');
+    link.href = url;
+    link.download = filename;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function csvCell(value) {
+    return '"' + String(value ?? '').replace(/"/g, '""') + '"';
+  }
+
+  csvButton.addEventListener('click', () => {
+    const rows = [
+      ['GI SMART POND REPORT', dateLabel.textContent],
+      ['Equipment', 'Running Hours'],
+      ['EB Supply', page.querySelector('[data-equipment-id="EB"] .reports-power-hours')?.textContent || '--'],
+      ['DG Supply', page.querySelector('[data-equipment-id="DG"] .reports-power-hours')?.textContent || '--']
+    ];
+    if (selectedPeriod === 'today' || selectedPeriod === 'yesterday') {
+      rows.push(['Aerator', 'Running Hours']);
+      for (let number = 1; number <= 10; number += 1) {
+        const id = 'AERATOR_' + String(number).padStart(2, '0');
+        const value = page.querySelector('[data-equipment-id="' + id + '"] .reports-aerator-hours')?.textContent || '--';
+        rows.push([id.replace('_', ' '), value]);
+      }
+      rows.push([], ['Events History'], ['Time', 'Equipment', 'State']);
+      eventsList.querySelectorAll('.reports-event-row').forEach((row) => {
+        rows.push(Array.from(row.children).map((cell) => cell.textContent));
+      });
+    }
+    const csv = '\\uFEFF' + rows.map((row) => row.map(csvCell).join(',')).join('\\r\\n');
+    downloadFile(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'GI-SMART-POND-' + selectedPeriod + '.csv');
+  });
+
+  posterButton.addEventListener('click', () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1350;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    context.fillStyle = '#F2F8FA';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = '#123B50';
+    context.font = '600 54px Inter, Arial, sans-serif';
+    context.fillText('GI SMART POND', 76, 120);
+    context.fillStyle = '#078D87';
+    context.font = '28px Inter, Arial, sans-serif';
+    context.fillText('SMART AQUACULTURE MONITORING', 78, 170);
+    context.fillStyle = '#123B50';
+    context.font = '600 38px Inter, Arial, sans-serif';
+    context.fillText('Pond Performance Report', 76, 270);
+    context.font = '28px Inter, Arial, sans-serif';
+    context.fillStyle = '#607782';
+    context.fillText(dateLabel.textContent, 78, 320);
+    const drawMetric = (label, value, x, y, fill) => {
+      context.fillStyle = fill;
+      context.beginPath();
+      context.roundRect(x, y, 430, 190, 24);
+      context.fill();
+      context.fillStyle = '#56717D';
+      context.font = '30px Inter, Arial, sans-serif';
+      context.fillText(label, x + 34, y + 62);
+      context.fillStyle = '#123B50';
+      context.font = '600 54px Inter, Arial, sans-serif';
+      context.fillText(value, x + 34, y + 132);
+    };
+    drawMetric('EB SUPPLY', powerGrid.querySelector('.eb .reports-power-hours').textContent, 76, 390, '#E5F4EC');
+    drawMetric('DG SUPPLY', powerGrid.querySelector('.dg .reports-power-hours').textContent, 574, 390, '#E8F1F8');
+    context.fillStyle = '#123B50';
+    context.font = '600 34px Inter, Arial, sans-serif';
+    context.fillText('Aerator Running Hours', 78, 700);
+    if (selectedPeriod === 'today' || selectedPeriod === 'yesterday') {
+      for (let number = 1; number <= 10; number += 1) {
+        const id = 'AERATOR_' + String(number).padStart(2, '0');
+        const value = page.querySelector('[data-equipment-id="' + id + '"] .reports-aerator-hours')?.textContent || '-- hrs';
+        const x = number <= 5 ? 82 : 570;
+        const y = 770 + ((number - 1) % 5) * 76;
+        context.fillStyle = '#56717D';
+        context.font = '27px Inter, Arial, sans-serif';
+        context.fillText('A' + String(number).padStart(2, '0'), x, y);
+        context.fillStyle = '#123B50';
+        context.font = '600 27px Inter, Arial, sans-serif';
+        context.fillText(value, x + 230, y);
+      }
+    } else {
+      context.fillStyle = '#607782';
+      context.font = '26px Inter, Arial, sans-serif';
+      context.fillText('Weekly and monthly view: EB / DG supply totals', 80, 790);
+    }
+    context.fillStyle = '#078D87';
+    context.font = '28px Inter, Arial, sans-serif';
+    context.fillText('Inspired by Godavari.', 78, 1260);
+    canvas.toBlob((blob) => {
+      if (blob) downloadFile(blob, 'GI-SMART-POND-' + selectedPeriod + '-poster.png');
+    }, 'image/png');
+  });
+
   content.append(
     FarmDetails(DEMO_DATA.farm),
     intro,
@@ -222,7 +341,8 @@ export function Reports() {
     dateLabel,
     powerSection,
     aeratorSection,
-    eventsSection
+    eventsSection,
+    exportSection
   );
 
   page.append(Header(), content, BottomNavigation('reports'));
