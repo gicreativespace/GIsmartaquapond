@@ -236,7 +236,7 @@ export function Reports() {
     const ebHours = hasCoverage ? getExportHours('EB', reportWindow.start, reportWindow.end) : 0;
     const dgHours = hasCoverage ? getExportHours('DG', reportWindow.start, reportWindow.end) : 0;
     const periodNames = { today: 'DAILY', yesterday: 'YESTERDAY', week: 'WEEKLY', month: 'MONTHLY' };
-    const reportDate = dateLabel.textContent || getISTDateLabel(0);
+    const reportDate = formatReportDate(getReportPeriodWindow(Date.now(), selectedPeriod).start);
     const rows = [];
     const esc = (value) => String(value).replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
     const text = (x, y, size, value, color = '0.07 0.23 0.31') => {
@@ -246,22 +246,27 @@ export function Reports() {
     const line = (x1, y1, x2, y2, color = '0.84 0.90 0.92') => rows.push(`q ${color} RG 0.7 w ${x1} ${y1} m ${x2} ${y2} l S Q`);
 
     rect(0, 0, 595, 842, '1 1 1');
-    text(42, 797, 25, 'GI SMART POND', '0.03 0.55 0.53');
-    text(43, 781, 8, 'SMART AQUACULTURE MONITORING', '0.34 0.44 0.49');
+    // GI wave emblem: clean vector mark, matching the application logo.
+    rows.push('q 0.95 0.97 0.98 rg 24 775 54 54 re f Q');
+    rows.push('q 0.03 0.55 0.53 RG 3.2 w 1 J 1 j 30 805 m 38 813 46 813 54 805 c 62 797 70 797 78 805 c S Q');
+    rows.push('q 0.07 0.66 0.64 RG 3.2 w 1 J 1 j 30 796 m 38 804 46 804 54 796 c 62 788 70 788 78 796 c S Q');
+    rows.push('q 0.07 0.23 0.31 RG 2.5 w 1 J 1 j 38 786 m 44 792 50 792 56 786 c 62 780 68 780 74 786 c S Q');
+    text(92, 805, 23, 'GI SMART POND', '0.03 0.55 0.53');
+    text(93, 788, 8, 'SMART AQUACULTURE MONITORING', '0.34 0.44 0.49');
     line(42, 766, 553, 766, '0.03 0.55 0.53');
     text(42, 735, 21, periodNames[selectedPeriod] + ' PERFORMANCE REPORT');
     text(42, 715, 11, reportDate, '0.34 0.44 0.49');
 
     text(42, 675, 14, 'FARM DETAILS');
-    rect(42, 585, 511, 72, '0.95 0.97 0.98');
+    rect(42, 565, 511, 92, '0.95 0.97 0.98');
     text(57, 635, 8, 'FARM NAME', '0.34 0.44 0.49');
-    text(57, 615, 13, DEMO_DATA.farm.name);
+    text(57, 616, 13, DEMO_DATA.farm.name);
     text(310, 635, 8, 'POND ID', '0.34 0.44 0.49');
-    text(310, 615, 13, DEMO_DATA.farm.pondId);
-    text(57, 597, 8, 'LOCATION', '0.34 0.44 0.49');
-    text(57, 579, 11, DEMO_DATA.farm.location);
-    text(310, 597, 8, 'POND SIZE', '0.34 0.44 0.49');
-    text(310, 579, 11, DEMO_DATA.farm.pondSize);
+    text(310, 616, 13, DEMO_DATA.farm.pondId);
+    text(57, 592, 8, 'LOCATION', '0.34 0.44 0.49');
+    text(57, 574, 11, DEMO_DATA.farm.location);
+    text(310, 592, 8, 'POND SIZE', '0.34 0.44 0.49');
+    text(310, 574, 11, DEMO_DATA.farm.pondSize);
 
     text(42, 540, 14, 'POWER SUPPLY SUMMARY');
     rect(42, 462, 247, 62, '0.91 0.97 0.94');
@@ -506,21 +511,87 @@ export function Reports() {
   }
 
   function createXlsxBlob(rows) {
+    const sectionNames = new Set([
+      'POWER SUMMARY', 'AERATOR RUNNING HOURS', 'EVENTS HISTORY',
+      'DAILY POWER BREAKDOWN'
+    ]);
+    const headerNames = new Set(['Equipment', 'Aerator', 'Time (IST)', 'Date']);
+    const maxColumns = Math.max(3, ...rows.map((row) => row.length));
+    const merges = [];
     const sheetRows = rows.map((row, rowIndex) => {
+      const rowNumber = rowIndex + 1;
+      const first = String(row[0] ?? '');
+      const isTitle = rowIndex === 0;
+      const isSection = sectionNames.has(first);
+      const isHeader = headerNames.has(first);
+      const isTotal = first === 'Period Total';
+      if ((isTitle || isSection) && maxColumns > 1) {
+        merges.push('<mergeCell ref="A' + rowNumber + ':' + columnName(maxColumns - 1) + rowNumber + '"/>');
+      }
       const cells = row.map((value, columnIndex) => {
-        const ref = columnName(columnIndex) + (rowIndex + 1);
+        const ref = columnName(columnIndex) + rowNumber;
+        let style = 7;
+        if (isTitle) style = 1;
+        else if (isSection) style = 2;
+        else if (isHeader) style = 3;
+        else if (isTotal) style = 6;
+        else if (rowIndex >= 1 && rowIndex <= 6 && columnIndex === 0) style = 4;
+        else if (typeof value === 'number' && Number.isFinite(value)) style = 5;
+        else if (rowIndex % 2 === 0) style = 8;
+
         if (typeof value === 'number' && Number.isFinite(value)) {
-          return '<c r="' + ref + '" t="n"><v>' + value + '</v></c>';
+          return '<c r="' + ref + '" s="' + style + '" t="n"><v>' + value + '</v></c>';
         }
-        return '<c r="' + ref + '" t="inlineStr"><is><t xml:space="preserve">' +
+        return '<c r="' + ref + '" s="' + style + '" t="inlineStr"><is><t xml:space="preserve">' +
           xmlEscape(value) + '</t></is></c>';
       }).join('');
-      return '<row r="' + (rowIndex + 1) + '">' + cells + '</row>';
+      const height = isTitle ? '30' : (isSection ? '23' : (isHeader ? '21' : '19'));
+      return '<row r="' + rowNumber + '" ht="' + height + '" customHeight="1">' + cells + '</row>';
     }).join('');
+
+    const mergeXml = merges.length ? '<mergeCells count="' + merges.length + '">' + merges.join('') + '</mergeCells>' : '';
     const worksheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
       '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
       'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
-      '<sheetData>' + sheetRows + '</sheetData></worksheet>';
+      '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
+      '<sheetFormatPr defaultRowHeight="19"/>' +
+      '<cols><col min="1" max="1" width="27" customWidth="1"/><col min="2" max="2" width="23" customWidth="1"/><col min="3" max="3" width="23" customWidth="1"/></cols>' +
+      '<sheetData>' + sheetRows + '</sheetData>' + mergeXml +
+      '<pageMargins left="0.25" right="0.25" top="0.5" bottom="0.5" header="0.2" footer="0.2"/>' +
+      '<pageSetup orientation="landscape" paperSize="9" fitToWidth="1" fitToHeight="0"/>' +
+      '</worksheet>';
+
+    const styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+      '<numFmts count="1"><numFmt numFmtId="164" formatCode="0.0"/></numFmts>' +
+      '<fonts count="4">' +
+      '<font><sz val="11"/><name val="Aptos"/><color rgb="FF123B50"/></font>' +
+      '<font><b/><sz val="16"/><name val="Aptos Display"/><color rgb="FFFFFFFF"/></font>' +
+      '<font><b/><sz val="11"/><name val="Aptos"/><color rgb="FFFFFFFF"/></font>' +
+      '<font><b/><sz val="10"/><name val="Aptos"/><color rgb="FF123B50"/></font>' +
+      '</fonts>' +
+      '<fills count="6">' +
+      '<fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>' +
+      '<fill><patternFill patternType="solid"><fgColor rgb="FF123B50"/><bgColor indexed="64"/></patternFill></fill>' +
+      '<fill><patternFill patternType="solid"><fgColor rgb="FF078D87"/><bgColor indexed="64"/></patternFill></fill>' +
+      '<fill><patternFill patternType="solid"><fgColor rgb="FFE5F3F2"/><bgColor indexed="64"/></patternFill></fill>' +
+      '<fill><patternFill patternType="solid"><fgColor rgb="FFF2F8FA"/><bgColor indexed="64"/></patternFill></fill>' +
+      '</fills>' +
+      '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>' +
+      '<border><left style="thin"><color rgb="FFD7E3E8"/></left><right style="thin"><color rgb="FFD7E3E8"/></right><top style="thin"><color rgb="FFD7E3E8"/></top><bottom style="thin"><color rgb="FFD7E3E8"/></bottom><diagonal/></border></borders>' +
+      '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+      '<cellXfs count="9">' +
+      '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+      '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center"/></xf>' +
+      '<xf numFmtId="0" fontId="2" fillId="3" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center"/></xf>' +
+      '<xf numFmtId="0" fontId="2" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>' +
+      '<xf numFmtId="0" fontId="3" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>' +
+      '<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="right" vertical="center"/></xf>' +
+      '<xf numFmtId="0" fontId="3" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>' +
+      '<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>' +
+      '<xf numFmtId="0" fontId="0" fillId="5" borderId="1" xfId="0" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>' +
+      '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+
     const workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
       '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
       'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
@@ -531,6 +602,7 @@ export function Reports() {
       '<Default Extension="xml" ContentType="application/xml"/>' +
       '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
       '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
       '</Types>';
     const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
       '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
@@ -539,12 +611,14 @@ export function Reports() {
     const workbookRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
       '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
       '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+      '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' +
       '</Relationships>';
     return makeZip([
       { name: '[Content_Types].xml', content: contentTypes },
       { name: '_rels/.rels', content: rootRels },
       { name: 'xl/workbook.xml', content: workbook },
       { name: 'xl/_rels/workbook.xml.rels', content: workbookRels },
+      { name: 'xl/styles.xml', content: styles },
       { name: 'xl/worksheets/sheet1.xml', content: worksheet }
     ]);
   }
