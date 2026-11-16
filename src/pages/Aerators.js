@@ -1,15 +1,16 @@
-
 /**
  * GI SMART POND
  * Aerators Page
  *
  * Displays individual aerator starter feedback.
- * Does not claim physical paddle-wheel rotation sensing.
+ * Animation represents starter feedback only; physical wheel rotation
+ * is not independently sensed.
  */
 
 import { Header } from '../components/Header.js';
 import { BottomNavigation } from '../components/BottomNavigation.js';
 import { DEMO_DATA } from '../data/demoData.js';
+import aeratorIllustration from '../assets/illustrations/aerator.svg?raw';
 
 function createAeratorItem(aerator) {
   const isOn = Boolean(aerator.isOn);
@@ -35,12 +36,18 @@ function createAeratorItem(aerator) {
 
   const illustration = document.createElement('div');
   illustration.className = 'aerator-wheel-illustration';
+  illustration.innerHTML = aeratorIllustration;
 
-  const image = document.createElement('img');
-  image.src = '/src/assets/illustrations/aerator.svg';
-  image.alt = 'Aerator paddle wheel';
+  const svg = illustration.querySelector('svg.aerator-illustration');
+  if (svg) {
+    svg.classList.add(isOn ? 'is-on' : 'is-off');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute(
+      'aria-label',
+      isOn ? 'Aerator running with moving water' : 'Aerator stopped'
+    );
+  }
 
-  illustration.appendChild(image);
   visual.appendChild(illustration);
 
   const feedback = document.createElement('p');
@@ -63,6 +70,9 @@ export function Aerators() {
   const content = document.createElement('div');
   content.className = 'page-content';
 
+  const intro = document.createElement('div');
+  intro.className = 'aerator-page-intro';
+
   const title = document.createElement('h1');
   title.className = 'page-title';
   title.textContent = 'Aerator Monitoring';
@@ -71,16 +81,15 @@ export function Aerators() {
   subtitle.className = 'page-subtitle';
   subtitle.textContent = 'Individual starter feedback status';
 
+  intro.append(title, subtitle);
+
   const aerators = DEMO_DATA.aerators.items || [];
-
-  const running = aerators.filter(
-    (aerator) => Boolean(aerator.isOn)
-  ).length;
-
+  const running = aerators.filter((aerator) => Boolean(aerator.isOn)).length;
   const stopped = aerators.length - running;
 
   const summary = document.createElement('section');
   summary.className = 'aerator-summary';
+  summary.setAttribute('aria-label', 'Aerator status summary');
 
   const totalText = document.createElement('p');
   totalText.className = 'aerator-summary-total';
@@ -105,16 +114,9 @@ export function Aerators() {
   note.textContent =
     'Wheel animation represents starter feedback status. Actual paddle-wheel rotation is not independently sensed.';
 
-  content.append(
-    title,
-    subtitle,
-    summary,
-    list,
-    note
-  );
+  content.append(intro, summary, list, note);
 
   const navigation = BottomNavigation('aerators');
-
   page.append(header, content, navigation);
 
   return page;
