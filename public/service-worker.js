@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'gi-smart-pond-v5';
+const CACHE_NAME = 'gi-smart-pond-v6';
 const APP_SHELL = [
   './',
   './index.html'
