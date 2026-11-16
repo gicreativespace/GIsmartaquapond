@@ -222,10 +222,9 @@ export function Reports() {
     element('h2', '', 'Export Reports')
   );
   const exportActions = element('div', 'reports-export-actions');
-  const pdfButton = element('button', 'reports-export-button', 'PDF');
-  const csvButton = element('button', 'reports-export-button', 'Excel / CSV');
-  const posterButton = element('button', 'reports-export-button', 'Poster PNG');
-  [pdfButton, csvButton, posterButton].forEach((button) => {
+  const pdfButton = element('button', 'reports-export-button', 'Download PDF');
+  const xlsxButton = element('button', 'reports-export-button', 'Download Excel');
+  [pdfButton, xlsxButton].forEach((button) => {
     button.type = 'button';
     exportActions.append(button);
   });
@@ -244,94 +243,236 @@ export function Reports() {
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  function csvCell(value) {
-    return '"' + String(value ?? '').replace(/"/g, '""') + '"';
+  function getExportWindow() {
+    const periodWindow = getReportPeriodWindow(Date.now(), selectedPeriod);
+    if (!activeSimulationSnapshot) {
+      return { start: periodWindow.start, end: periodWindow.end };
+    }
+    const dataStart = activeSimulationSnapshot.startTime ?? periodWindow.start;
+    const dataEnd = getISTDayWindow(activeSimulationSnapshot.endTime).end;
+    return {
+      start: Math.max(periodWindow.start, dataStart),
+      end: Math.min(periodWindow.end, dataEnd)
+    };
   }
 
-  csvButton.addEventListener('click', () => {
-    const rows = [
-      ['GI SMART POND REPORT', dateLabel.textContent],
-      ['Equipment', 'Running Hours'],
-      ['EB Supply', page.querySelector('[data-equipment-id="EB"] .reports-power-hours')?.textContent || '--'],
-      ['DG Supply', page.querySelector('[data-equipment-id="DG"] .reports-power-hours')?.textContent || '--']
-    ];
-    if (selectedPeriod === 'today' || selectedPeriod === 'yesterday') {
-      rows.push(['Aerator', 'Running Hours']);
-      for (let number = 1; number <= 10; number += 1) {
-        const id = 'AERATOR_' + String(number).padStart(2, '0');
-        const value = page.querySelector('[data-equipment-id="' + id + '"] .reports-aerator-hours')?.textContent || '--';
-        rows.push([id.replace('_', ' '), value]);
-      }
-      rows.push([], ['Events History'], ['Time', 'Equipment', 'State']);
-      eventsList.querySelectorAll('.reports-event-row').forEach((row) => {
-        rows.push(Array.from(row.children).map((cell) => cell.textContent));
-      });
-    }
-    const csv = '\uFEFF' + rows.map((row) => row.map(csvCell).join(',')).join('\r\n');
-    downloadFile(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'GI-SMART-POND-' + selectedPeriod + '.csv');
-  });
+  function getExportHours(equipmentId, start, end) {
+    if (!activeSimulationSnapshot || end <= start) return 0;
+    const value = calculateRuntimeHours(activeSimulationSnapshot, equipmentId, start, end);
+    return Number.isFinite(value) ? Number(value.toFixed(1)) : 0;
+  }
 
-  posterButton.addEventListener('click', () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1350;
-    const context = canvas.getContext('2d');
-    if (!context) return;
-    context.fillStyle = '#F2F8FA';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = '#123B50';
-    context.font = '600 54px Inter, Arial, sans-serif';
-    context.fillText('GI SMART POND', 76, 120);
-    context.fillStyle = '#078D87';
-    context.font = '28px Inter, Arial, sans-serif';
-    context.fillText('SMART AQUACULTURE MONITORING', 78, 170);
-    context.fillStyle = '#123B50';
-    context.font = '600 38px Inter, Arial, sans-serif';
-    context.fillText('Pond Performance Report', 76, 270);
-    context.font = '28px Inter, Arial, sans-serif';
-    context.fillStyle = '#607782';
-    context.fillText(dateLabel.textContent, 78, 320);
-    const drawMetric = (label, value, x, y, fill) => {
-      context.fillStyle = fill;
-      context.beginPath();
-      context.roundRect(x, y, 430, 190, 24);
-      context.fill();
-      context.fillStyle = '#56717D';
-      context.font = '30px Inter, Arial, sans-serif';
-      context.fillText(label, x + 34, y + 62);
-      context.fillStyle = '#123B50';
-      context.font = '600 54px Inter, Arial, sans-serif';
-      context.fillText(value, x + 34, y + 132);
-    };
-    drawMetric('EB SUPPLY', powerGrid.querySelector('.eb .reports-power-hours').textContent, 76, 390, '#E5F4EC');
-    drawMetric('DG SUPPLY', powerGrid.querySelector('.dg .reports-power-hours').textContent, 574, 390, '#E8F1F8');
-    context.fillStyle = '#123B50';
-    context.font = '600 34px Inter, Arial, sans-serif';
-    context.fillText('Aerator Running Hours', 78, 700);
+  function getExportRows() {
+    const rows = [
+      ['GI SMART POND — REPORT'],
+      ['Farm', DEMO_DATA.farm.name],
+      ['Location', DEMO_DATA.farm.location],
+      ['Pond ID', DEMO_DATA.farm.pondId],
+      ['Pond Size', DEMO_DATA.farm.pondSize],
+      ['Report Period', selectedPeriod.toUpperCase()],
+      ['Selected Range', dateLabel.textContent],
+      [],
+      ['POWER SUMMARY'],
+      ['Equipment', 'Running Hours']
+    ];
+
+    const reportWindow = getExportWindow();
+    const hasCoverage = reportWindow.end > reportWindow.start;
+    const ebTotal = hasCoverage ? getExportHours('EB', reportWindow.start, reportWindow.end) : 0;
+    const dgTotal = hasCoverage ? getExportHours('DG', reportWindow.start, reportWindow.end) : 0;
+    rows.push(['EB Supply', ebTotal], ['DG Supply', dgTotal]);
+
     if (selectedPeriod === 'today' || selectedPeriod === 'yesterday') {
+      rows.push(
+        [],
+        ['AERATOR RUNNING HOURS'],
+        ['Aerator', 'Running Hours']
+      );
       for (let number = 1; number <= 10; number += 1) {
         const id = 'AERATOR_' + String(number).padStart(2, '0');
-        const value = page.querySelector('[data-equipment-id="' + id + '"] .reports-aerator-hours')?.textContent || '-- hrs';
-        const x = number <= 5 ? 82 : 570;
-        const y = 770 + ((number - 1) % 5) * 76;
-        context.fillStyle = '#56717D';
-        context.font = '27px Inter, Arial, sans-serif';
-        context.fillText('A' + String(number).padStart(2, '0'), x, y);
-        context.fillStyle = '#123B50';
-        context.font = '600 27px Inter, Arial, sans-serif';
-        context.fillText(value, x + 230, y);
+        const hours = hasCoverage ? getExportHours(id, reportWindow.start, reportWindow.end) : 0;
+        rows.push([id.replace('_', ' '), hours]);
       }
+
+      rows.push([], ['EVENTS HISTORY'], ['Time (IST)', 'Equipment', 'State']);
+      if (activeSimulationSnapshot && hasCoverage) {
+        const visibleEvents = activeSimulationSnapshot.allEvents.filter((event) =>
+          event.time >= reportWindow.start && event.time < reportWindow.end
+        );
+        visibleEvents.forEach((event) => {
+          rows.push([
+            formatEventTime(event.time),
+            event.id.replace('AERATOR_', 'AERATOR '),
+            event.state
+          ]);
+        });
+      }
+      if (rows[rows.length - 1][0] === 'State') rows.push(['No events', '', '']);
     } else {
-      context.fillStyle = '#607782';
-      context.font = '26px Inter, Arial, sans-serif';
-      context.fillText('Weekly and monthly view: EB / DG supply totals', 80, 790);
+      rows.push(
+        [],
+        ['DAILY POWER BREAKDOWN'],
+        ['Date', 'EB Supply (hrs)', 'DG Supply (hrs)']
+      );
+      const firstDay = getISTDayWindow(reportWindow.start).start;
+      for (let dayStart = firstDay; dayStart < reportWindow.end; dayStart += 86400000) {
+        const dayEnd = dayStart + 86400000;
+        const clippedStart = Math.max(dayStart, reportWindow.start);
+        const clippedEnd = Math.min(dayEnd, reportWindow.end);
+        const dayLabel = formatReportDate(dayStart);
+        rows.push([
+          dayLabel,
+          clippedEnd > clippedStart ? getExportHours('EB', clippedStart, clippedEnd) : 0,
+          clippedEnd > clippedStart ? getExportHours('DG', clippedStart, clippedEnd) : 0
+        ]);
+      }
+      rows.push(['Period Total', ebTotal, dgTotal]);
     }
-    context.fillStyle = '#078D87';
-    context.font = '28px Inter, Arial, sans-serif';
-    context.fillText('Inspired by Godavari.', 78, 1260);
-    canvas.toBlob((blob) => {
-      if (blob) downloadFile(blob, 'GI-SMART-POND-' + selectedPeriod + '-poster.png');
-    }, 'image/png');
+    return rows;
+  }
+
+  function xmlEscape(value) {
+    return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+  }
+
+  function columnName(index) {
+    let name = '';
+    let value = index + 1;
+    while (value > 0) {
+      const remainder = (value - 1) % 26;
+      name = String.fromCharCode(65 + remainder) + name;
+      value = Math.floor((value - 1) / 26);
+    }
+    return name;
+  }
+
+  function crc32(bytes) {
+    let crc = -1;
+    for (let i = 0; i < bytes.length; i += 1) {
+      crc ^= bytes[i];
+      for (let bit = 0; bit < 8; bit += 1) {
+        crc = (crc >>> 1) ^ ((crc & 1) ? 0xEDB88320 : 0);
+      }
+    }
+    return (crc ^ -1) >>> 0;
+  }
+
+  function makeZip(files) {
+    const encoder = new TextEncoder();
+    const localParts = [];
+    const centralParts = [];
+    let offset = 0;
+    const write16 = (view, at, value) => view.setUint16(at, value, true);
+    const write32 = (view, at, value) => view.setUint32(at, value >>> 0, true);
+
+    files.forEach((file) => {
+      const name = encoder.encode(file.name);
+      const data = encoder.encode(file.content);
+      const crc = crc32(data);
+      const local = new Uint8Array(30 + name.length);
+      const localView = new DataView(local.buffer);
+      write32(localView, 0, 0x04034B50);
+      write16(localView, 4, 20);
+      write16(localView, 6, 0);
+      write16(localView, 8, 0);
+      write16(localView, 10, 0);
+      write16(localView, 12, 0);
+      write32(localView, 14, crc);
+      write32(localView, 18, data.length);
+      write32(localView, 22, data.length);
+      write16(localView, 26, name.length);
+      write16(localView, 28, 0);
+      local.set(name, 30);
+      localParts.push(local, data);
+
+      const central = new Uint8Array(46 + name.length);
+      const centralView = new DataView(central.buffer);
+      write32(centralView, 0, 0x02014B50);
+      write16(centralView, 4, 20);
+      write16(centralView, 6, 20);
+      write16(centralView, 8, 0);
+      write16(centralView, 10, 0);
+      write16(centralView, 12, 0);
+      write16(centralView, 14, 0);
+      write32(centralView, 16, crc);
+      write32(centralView, 20, data.length);
+      write32(centralView, 24, data.length);
+      write16(centralView, 28, name.length);
+      write16(centralView, 30, 0);
+      write16(centralView, 32, 0);
+      write16(centralView, 34, 0);
+      write16(centralView, 36, 0);
+      write32(centralView, 38, 0);
+      write32(centralView, 42, offset);
+      central.set(name, 46);
+      centralParts.push(central);
+      offset += local.length + data.length;
+    });
+
+    const centralSize = centralParts.reduce((sum, part) => sum + part.length, 0);
+    const end = new Uint8Array(22);
+    const endView = new DataView(end.buffer);
+    write32(endView, 0, 0x06054B50);
+    write16(endView, 4, 0);
+    write16(endView, 6, 0);
+    write16(endView, 8, files.length);
+    write16(endView, 10, files.length);
+    write32(endView, 12, centralSize);
+    write32(endView, 16, offset);
+    write16(endView, 20, 0);
+    return new Blob([...localParts, ...centralParts, end], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+  }
+
+  function createXlsxBlob(rows) {
+    const sheetRows = rows.map((row, rowIndex) => {
+      const cells = row.map((value, columnIndex) => {
+        const ref = columnName(columnIndex) + (rowIndex + 1);
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          return '<c r="' + ref + '" t="n"><v>' + value + '</v></c>';
+        }
+        return '<c r="' + ref + '" t="inlineStr"><is><t xml:space="preserve">' +
+          xmlEscape(value) + '</t></is></c>';
+      }).join('');
+      return '<row r="' + (rowIndex + 1) + '">' + cells + '</row>';
+    }).join('');
+    const worksheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
+      'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+      '<sheetData>' + sheetRows + '</sheetData></worksheet>';
+    const workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" ' +
+      'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">' +
+      '<sheets><sheet name="Pond Report" sheetId="1" r:id="rId1"/></sheets></workbook>';
+    const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">' +
+      '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+      '<Default Extension="xml" ContentType="application/xml"/>' +
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>' +
+      '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' +
+      '</Types>';
+    const rootRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>' +
+      '</Relationships>';
+    const workbookRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+      '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>' +
+      '</Relationships>';
+    return makeZip([
+      { name: '[Content_Types].xml', content: contentTypes },
+      { name: '_rels/.rels', content: rootRels },
+      { name: 'xl/workbook.xml', content: workbook },
+      { name: 'xl/_rels/workbook.xml.rels', content: workbookRels },
+      { name: 'xl/worksheets/sheet1.xml', content: worksheet }
+    ]);
+  }
+
+  xlsxButton.addEventListener('click', () => {
+    const workbook = createXlsxBlob(getExportRows());
+    downloadFile(workbook, 'GI-SMART-POND-' + selectedPeriod.toUpperCase() + '.xlsx');
   });
 
   content.append(
