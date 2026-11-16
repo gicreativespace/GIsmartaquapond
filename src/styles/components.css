@@ -2337,3 +2337,328 @@
 
 #app[data-current-page="home"] .brand-footer-credit { font-size: 10px; }
 #app[data-current-page="home"] .brand-footer-tagline { font-size: 9px; }
+
+
+/* =========================================
+   FINAL VISUAL BALANCE — HOME + READABILITY
+========================================= */
+
+/* Let the Home dashboard use the available phone height without
+   stretching text or forcing short screens to clip. */
+.home-page {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: 12px;
+  padding-bottom: calc(116px + env(safe-area-inset-bottom));
+}
+
+.home-page .app-header {
+  flex: 0 0 auto;
+}
+
+.home-page .home-content {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.home-page .farm-details-card,
+.home-page .home-power-overview {
+  flex: 0 0 auto;
+}
+
+.home-page .home-secondary-grid {
+  flex: 1 0 auto;
+  min-height: 190px;
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+}
+
+.home-page .home-secondary-grid .home-compact-card {
+  display: flex;
+  height: 100%;
+  min-height: clamp(176px, 23dvh, 218px);
+  padding: 12px;
+  justify-content: space-between;
+}
+
+.home-page .home-secondary-grid .equipment-illustration {
+  flex: 1 1 auto;
+  min-height: 78px;
+  height: auto;
+  max-height: 112px;
+}
+
+.home-page .home-secondary-grid .equipment-illustration img,
+.home-page .home-secondary-grid .equipment-illustration svg {
+  max-width: 128px;
+}
+
+.home-page .home-power-overview {
+  gap: 13px;
+  padding: 15px;
+}
+
+.home-page .home-supply-tile {
+  padding: 12px;
+}
+
+.home-page .home-supply-label {
+  font-size: 11px;
+}
+
+.home-page .home-supply-note,
+.home-page .home-power-footnote {
+  font-size: 11px;
+}
+
+.home-page .home-power-heading h2 {
+  font-size: 15px;
+}
+
+.home-page .home-supply-status {
+  font-size: 19px;
+}
+
+.home-page .farm-name {
+  font-size: 17px;
+}
+
+.home-page .farm-location {
+  font-size: 13px;
+}
+
+.home-page .farm-meta-label {
+  font-size: 11px;
+}
+
+.home-page .farm-meta-value {
+  font-size: 13px;
+}
+
+/* Shared page typography: clear at normal phone viewing distance. */
+.page-title {
+  font-size: 24px !important;
+  line-height: 1.22;
+  font-weight: var(--font-weight-medium);
+}
+
+.page-subtitle {
+  font-size: 14px !important;
+  line-height: 1.45;
+}
+
+.header-title {
+  font-size: 17px;
+}
+
+.header-tagline {
+  font-size: 10px;
+}
+
+.farm-name,
+.settings-farm-name {
+  font-size: 16px;
+}
+
+.farm-location,
+.settings-farm-location {
+  font-size: 13px;
+}
+
+.farm-meta-label,
+.settings-farm-label,
+.settings-farm-status {
+  font-size: 11px;
+}
+
+.farm-meta-value {
+  font-size: 13px;
+}
+
+.equipment-card-title,
+.equipment-title {
+  font-size: 14px;
+}
+
+.equipment-status,
+.status-badge {
+  font-size: 11px;
+}
+
+.equipment-card-description,
+.equipment-subtitle {
+  font-size: 12px;
+}
+
+.bottom-nav-label {
+  font-size: 11px;
+}
+
+/* Power page */
+.power-eyebrow,
+.power-section-heading h2 {
+  font-size: 11px;
+}
+
+.power-section-heading span,
+.supply-source-row span {
+  font-size: 11px;
+}
+
+.supply-detail-title {
+  font-size: 15px;
+}
+
+.supply-detail-description,
+.supply-feedback,
+.supply-source-row strong {
+  font-size: 13px;
+}
+
+.supply-state-badge {
+  font-size: 11px;
+}
+
+.power-monitoring-note strong {
+  font-size: 12px;
+}
+
+.power-monitoring-note p {
+  font-size: 12px;
+}
+
+/* Aerator page */
+.aerators-page .page-title {
+  font-size: 24px;
+}
+
+.aerators-page .page-subtitle {
+  font-size: 14px;
+}
+
+.aerator-summary-total {
+  font-size: 19px;
+}
+
+.aerator-summary-breakdown {
+  font-size: 12px;
+}
+
+.aerator-detail-name {
+  font-size: 13px;
+}
+
+.aerator-detail-card .equipment-status {
+  font-size: 11px;
+}
+
+.aerator-feedback,
+.aerator-monitoring-note {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* Reports page */
+.reports-period-button {
+  font-size: 13px;
+}
+
+.reports-metric-label,
+.reports-aerator-name,
+.reports-aerator-hours,
+.reports-section-tag {
+  font-size: 13px;
+}
+
+.reports-metric-value {
+  font-size: 23px;
+}
+
+.reports-metric-unit,
+.reports-period-status {
+  font-size: 12px;
+}
+
+.reports-section-heading h2,
+.reports-export-title {
+  font-size: 15px;
+}
+
+.reports-chart-placeholder strong,
+.reports-event-empty,
+.reports-data-note {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.reports-chart-placeholder span,
+.reports-export-copy small,
+.reports-export-status {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.reports-export-copy strong {
+  font-size: 14px;
+}
+
+/* Settings page */
+.settings-eyebrow {
+  font-size: 11px;
+}
+
+.settings-page .page-subtitle {
+  font-size: 14px;
+}
+
+.settings-section-title {
+  font-size: 15px;
+}
+
+.settings-section-description,
+.setting-item-description {
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.setting-item-title {
+  font-size: 14px;
+}
+
+/* Keep the layout fluid on compact phones and short landscape screens. */
+@media (max-width: 359px) {
+  .home-page .home-content { gap: 10px; }
+  .home-page .home-secondary-grid .home-compact-card {
+    min-height: 166px;
+    padding: 9px;
+  }
+  .home-page .home-secondary-grid .equipment-illustration {
+    min-height: 68px;
+  }
+  .page-title { font-size: 22px !important; }
+}
+
+@media (max-height: 760px) and (orientation: portrait) {
+  .home-page .home-content { gap: 10px; }
+  .home-page .home-secondary-grid .home-compact-card {
+    min-height: 164px;
+  }
+  .home-page .home-secondary-grid .equipment-illustration {
+    min-height: 68px;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .home-page {
+    min-height: auto;
+    padding-bottom: 24px;
+  }
+  .home-page .home-secondary-grid {
+    min-height: 176px;
+  }
+}
