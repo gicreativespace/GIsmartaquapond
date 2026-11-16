@@ -213,11 +213,15 @@ export function Reports() {
     if (!snapshot || !Array.isArray(snapshot.allEvents)) return;
 
     const window = getSimulationPeriodWindow(snapshot.currentTime, selectedDays);
-    const reportStart = Math.max(window.start, snapshot.startTime);
-    const reportEnd = Math.min(window.end, snapshot.currentTime + 1);
+    // Reports use the complete date coverage in the uploaded TXT file,
+    // not only the events reached by the playback cursor.
+    const dataStart = getSimulationPeriodWindow(snapshot.startTime, 1).start;
+    const dataEnd = getSimulationPeriodWindow(snapshot.endTime, 1).end;
+    const reportStart = Math.max(window.start, dataStart);
+    const reportEnd = Math.min(window.end, dataEnd);
     const hasCoverage = reportEnd > reportStart;
-    const rangeStartLabel = formatReportDate(window.start);
-    const rangeEndLabel = formatReportDate(Math.min(window.end - 1, snapshot.currentTime));
+    const rangeStartLabel = formatReportDate(reportStart);
+    const rangeEndLabel = formatReportDate(reportEnd - 1);
     dateLabel.textContent = selectedDays === 1
       ? 'Today · ' + rangeEndLabel
       : rangeStartLabel + ' – ' + rangeEndLabel + ' · ' + selectedDays + ' days';
