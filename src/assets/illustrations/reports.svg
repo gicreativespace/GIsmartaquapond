@@ -1,0 +1,61 @@
+
+<svg
+  class="reports-illustration"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 180 160"
+  fill="none"
+>
+  <rect
+    x="16"
+    y="10"
+    width="148"
+    height="138"
+    rx="19"
+    stroke="#287EAD"
+    stroke-width="6"
+  />
+
+  <!-- Chart bars -->
+  <rect
+    x="48"
+    y="88"
+    width="20"
+    height="39"
+    rx="5"
+    fill="#18A88D"
+  />
+
+  <rect
+    x="80"
+    y="76"
+    width="20"
+    height="51"
+    rx="5"
+    fill="#287EAD"
+  />
+
+  <rect
+    x="112"
+    y="57"
+    width="20"
+    height="70"
+    rx="5"
+    fill="#18A88D"
+  />
+
+  <!-- Top chart line -->
+  <path
+    d="M47 37 H132"
+    stroke="#7898A2"
+    stroke-width="7"
+    stroke-linecap="round"
+  />
+
+  <!-- Bottom baseline -->
+  <path
+    d="M40 134 H140"
+    stroke="#7898A2"
+    stroke-width="5"
+    stroke-linecap="round"
+  />
+</svg>
