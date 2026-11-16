@@ -112,7 +112,7 @@ export function Power() {
 
   const subtitle = document.createElement('p');
   subtitle.className = 'page-subtitle';
-  subtitle.textContent = 'Live supply availability from voltage feedback';
+  subtitle.textContent = 'Supply availability overview';
 
   intro.append(eyebrow, title, subtitle);
 
