@@ -10,6 +10,7 @@
 import { Header } from '../components/Header.js';
 import { BottomNavigation } from '../components/BottomNavigation.js';
 import { DEMO_DATA } from '../data/demoData.js';
+import { subscribeToPondData } from '../data/dataProvider.js';
 import aeratorIllustration from '../assets/illustrations/aerator.svg?raw';
 
 function createAeratorItem(aerator) {
@@ -118,6 +119,20 @@ export function Aerators() {
 
   const navigation = BottomNavigation('aerators');
   page.append(header, content, navigation);
+
+  subscribeToPondData((snapshot) => {
+    if (!snapshot || !Array.isArray(snapshot.aerators)) return;
+    const liveAerators = snapshot.aerators.map((item, index) => ({
+      id: index + 1,
+      name: 'AERATOR ' + String(index + 1).padStart(2, '0'),
+      isOn: item.state === 'ON'
+    }));
+    const liveRunning = liveAerators.filter((item) => item.isOn).length;
+    totalText.textContent = liveRunning + ' / ' + liveAerators.length + ' ON';
+    breakdown.textContent = liveRunning + ' Running · ' + (liveAerators.length - liveRunning) + ' Stopped';
+    list.replaceChildren();
+    liveAerators.forEach((item) => list.appendChild(createAeratorItem(item)));
+  });
 
   return page;
 }
