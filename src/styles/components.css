@@ -2303,34 +2303,35 @@
   }
 }
 
-/* Home signature sits neatly above the bottom navigation, matching other dashboards. */
+/* Home signature and navigation share the same bottom stack.
+   Navigation stays flush with the viewport; signature sits directly above it. */
 #app[data-current-page="home"] .bottom-navigation {
-  bottom: calc(36px + env(safe-area-inset-bottom));
-  min-height: 62px;
-  padding-bottom: 6px;
+  bottom: 0;
+  min-height: calc(64px + env(safe-area-inset-bottom));
+  padding: 7px 12px calc(7px + env(safe-area-inset-bottom));
 }
 
 #app[data-current-page="home"] .brand-footer {
   position: fixed;
-  z-index: 100;
+  z-index: 99;
   left: 50%;
-  bottom: calc(98px + env(safe-area-inset-bottom));
+  bottom: calc(64px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   width: min(100%, 600px);
   height: 42px;
   margin: 0;
-  padding: 3px 8px;
+  padding: 2px 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(242, 248, 250, 0.96);
   border: 0;
   box-shadow: none;
   backdrop-filter: blur(10px);
 }
 
 #app[data-current-page="home"] .brand-footer-trigger {
-  min-height: 36px;
+  min-height: 38px;
   gap: 2px;
   padding: 2px 12px;
 }
