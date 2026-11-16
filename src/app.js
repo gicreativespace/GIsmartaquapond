@@ -42,91 +42,86 @@ let contactPopupShownThisSession = false;
 function createBrandFooter() {
   const footer = document.createElement('footer');
   footer.className = 'brand-footer';
-  footer.innerHTML = `
-    <p class="brand-footer-credit">A GI Creative Space Work</p>
-    <p class="brand-footer-tagline">Inspired by Godavari.</p>
+
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'brand-footer-trigger';
+  trigger.setAttribute('aria-label', 'Contact GI Creative Space');
+  trigger.innerHTML = `
+    <span class="brand-footer-credit">A GI Creative Space Work</span>
+    <span class="brand-footer-tagline">Inspired by Godavari.</span>
   `;
 
-  const storageKey = 'gi-smart-pond-contact-popup-seen';
-  let alreadySeen = contactPopupShownThisSession;
+  const openContactPopup = () => {
+    if (document.querySelector('.brand-contact-overlay')) return;
 
-  try {
-    alreadySeen = alreadySeen || localStorage.getItem(storageKey) === 'true';
-  } catch (error) {
-    // Keep the popup available for this session when storage is restricted.
-  }
+    const overlay = document.createElement('div');
+    overlay.className = 'brand-contact-overlay';
+    overlay.setAttribute('role', 'presentation');
 
-  if (alreadySeen) return footer;
+    const dialog = document.createElement('section');
+    dialog.className = 'brand-contact-dialog';
+    dialog.setAttribute('role', 'dialog');
+    dialog.setAttribute('aria-modal', 'true');
+    dialog.setAttribute('aria-labelledby', 'brand-contact-title');
+    dialog.setAttribute('aria-describedby', 'brand-contact-description');
 
-  const overlay = document.createElement('div');
-  overlay.className = 'brand-contact-overlay';
-  overlay.setAttribute('role', 'presentation');
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'brand-contact-close';
+    close.setAttribute('aria-label', 'Close contact message');
+    close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
 
-  const dialog = document.createElement('section');
-  dialog.className = 'brand-contact-dialog';
-  dialog.setAttribute('role', 'dialog');
-  dialog.setAttribute('aria-modal', 'true');
-  dialog.setAttribute('aria-labelledby', 'brand-contact-title');
-  dialog.setAttribute('aria-describedby', 'brand-contact-description');
+    const icon = document.createElement('div');
+    icon.className = 'brand-contact-icon';
+    icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 11.7a8.2 8.2 0 0 1-12.1 7.2L4 20l1.1-4A8.2 8.2 0 1 1 20.2 11.7Z"/><path d="M8.7 8.3c.2-.4.4-.4.7-.4h.5c.2 0 .3.1.4.4l.7 1.6c.1.2.1.4-.1.6l-.5.6c-.2.2-.2.3 0 .6.5.8 1.2 1.5 2 2 .2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.6.8c.3.1.4.3.4.5 0 .4-.2 1-.6 1.3-.4.4-1 .6-1.6.5-1-.1-2.3-.8-3.5-1.8-1.3-1.1-2.2-2.5-2.4-3.5-.2-.9.1-1.7.5-2.2Z"/></svg>';
 
-  const close = document.createElement('button');
-  close.type = 'button';
-  close.className = 'brand-contact-close';
-  close.setAttribute('aria-label', 'Close contact message');
-  close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
+    const title = document.createElement('h2');
+    title.id = 'brand-contact-title';
+    title.textContent = 'Need Digital Solutions?';
 
-  const icon = document.createElement('div');
-  icon.className = 'brand-contact-icon';
-  icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 11.7a8.2 8.2 0 0 1-12.1 7.2L4 20l1.1-4A8.2 8.2 0 1 1 20.2 11.7Z"/><path d="M8.7 8.3c.2-.4.4-.4.7-.4h.5c.2 0 .3.1.4.4l.7 1.6c.1.2.1.4-.1.6l-.5.6c-.2.2-.2.3 0 .6.5.8 1.2 1.5 2 2 .2.1.4.1.6-.1l.7-.8c.2-.2.4-.2.6-.1l1.6.8c.3.1.4.3.4.5 0 .4-.2 1-.6 1.3-.4.4-1 .6-1.6.5-1-.1-2.3-.8-3.5-1.8-1.3-1.1-2.2-2.5-2.4-3.5-.2-.9.1-1.7.5-2.2Z"/></svg>';
+    const description = document.createElement('p');
+    description.id = 'brand-contact-description';
+    description.textContent = 'For your digital needs, creative solutions and smart technology, contact us.';
 
-  const title = document.createElement('h2');
-  title.id = 'brand-contact-title';
-  title.textContent = 'Need Digital Solutions?';
+    const whatsapp = document.createElement('a');
+    whatsapp.className = 'brand-contact-whatsapp';
+    whatsapp.href = 'https://wa.me/918985361991';
+    whatsapp.target = '_blank';
+    whatsapp.rel = 'noopener noreferrer';
+    whatsapp.setAttribute('aria-label', 'Contact us on WhatsApp');
+    whatsapp.innerHTML = `
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <path fill="currentColor" d="M16.02 3.2A12.7 12.7 0 0 0 5.1 22.38L3.4 28.6l6.38-1.67A12.7 12.7 0 1 0 16.02 3.2Zm0 23.1c-1.98 0-3.92-.53-5.62-1.54l-.4-.24-3.78.99 1.01-3.68-.26-.42A10.52 10.52 0 1 1 16.02 26.3Zm5.77-7.88c-.32-.16-1.9-.94-2.2-1.05-.3-.11-.51-.16-.72.16-.21.32-.83 1.05-1.02 1.26-.19.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.58-.95-.85-1.59-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.37.48-.55.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.72-1.73-.99-2.37-.26-.62-.52-.54-.72-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.12 1.1-1.12 2.67s1.15 3.1 1.31 3.31c.16.21 2.26 3.45 5.48 4.84.77.33 1.37.53 1.84.68.77.24 1.47.21 2.02.13.62-.09 1.9-.78 2.17-1.53.27-.75.27-1.39.19-1.53-.08-.13-.29-.21-.61-.37Z"/>
+      </svg>
+      <span>WhatsApp Us</span>
+    `;
 
-  const description = document.createElement('p');
-  description.id = 'brand-contact-description';
-  description.textContent = 'For your digital needs, creative solutions and smart technology, contact us.';
+    dialog.append(close, icon, title, description, whatsapp);
+    overlay.append(dialog);
+    document.body.append(overlay);
 
-  const whatsapp = document.createElement('a');
-  whatsapp.className = 'brand-contact-whatsapp';
-  whatsapp.href = 'https://wa.me/918985361991';
-  whatsapp.target = '_blank';
-  whatsapp.rel = 'noopener noreferrer';
-  whatsapp.setAttribute('aria-label', 'Contact us on WhatsApp');
-  whatsapp.innerHTML = `
-    <svg viewBox="0 0 32 32" aria-hidden="true">
-      <path fill="currentColor" d="M16.02 3.2A12.7 12.7 0 0 0 5.1 22.38L3.4 28.6l6.38-1.67A12.7 12.7 0 1 0 16.02 3.2Zm0 23.1c-1.98 0-3.92-.53-5.62-1.54l-.4-.24-3.78.99 1.01-3.68-.26-.42A10.52 10.52 0 1 1 16.02 26.3Zm5.77-7.88c-.32-.16-1.9-.94-2.2-1.05-.3-.11-.51-.16-.72.16-.21.32-.83 1.05-1.02 1.26-.19.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.58-.95-.85-1.59-1.9-1.78-2.22-.19-.32-.02-.49.14-.65.14-.14.32-.37.48-.55.16-.19.21-.32.32-.53.11-.21.05-.4-.03-.56-.08-.16-.72-1.73-.99-2.37-.26-.62-.52-.54-.72-.55h-.61c-.21 0-.56.08-.85.4-.29.32-1.12 1.1-1.12 2.67s1.15 3.1 1.31 3.31c.16.21 2.26 3.45 5.48 4.84.77.33 1.37.53 1.84.68.77.24 1.47.21 2.02.13.62-.09 1.9-.78 2.17-1.53.27-.75.27-1.39.19-1.53-.08-.13-.29-.21-.61-.37Z"/>
-    </svg>
-    <span>WhatsApp Us</span>
-  `;
+    const closePopup = () => {
+      overlay.remove();
+      document.removeEventListener('keydown', handleEscape);
+      trigger.focus({ preventScroll: true });
+    };
 
-  dialog.append(close, icon, title, description, whatsapp);
-  overlay.append(dialog);
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') closePopup();
+    };
 
-  const markSeenAndClose = () => {
-    contactPopupShownThisSession = true;
-    try {
-      localStorage.setItem(storageKey, 'true');
-    } catch (error) {
-      // Session-level guard above still prevents repeated display.
-    }
-    overlay.remove();
+    close.addEventListener('click', closePopup);
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) closePopup();
+    });
+    document.addEventListener('keydown', handleEscape);
+    whatsapp.addEventListener('click', closePopup);
+    close.focus({ preventScroll: true });
   };
 
-  close.addEventListener('click', markSeenAndClose);
-  whatsapp.addEventListener('click', markSeenAndClose);
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) markSeenAndClose();
-  });
-
-  document.addEventListener('keydown', function handlePopupEscape(event) {
-    if (event.key === 'Escape' && overlay.isConnected) {
-      markSeenAndClose();
-      document.removeEventListener('keydown', handlePopupEscape);
-    }
-  });
-
-  footer.append(overlay);
+  trigger.addEventListener('click', openContactPopup);
+  footer.append(trigger);
   return footer;
 }
 
