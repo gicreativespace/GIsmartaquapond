@@ -486,3 +486,146 @@
     font-size: 9px;
   }
 }
+
+
+/* =========================================
+   POWER MONITORING PAGE
+========================================= */
+
+.power-page .page-content {
+  gap: 12px;
+}
+
+.power-page .page-title {
+  color: var(--color-ocean);
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
+.power-page .page-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+  margin-top: -6px;
+}
+
+.supply-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.supply-detail-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+  padding: 16px;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.supply-detail-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--color-unavailable);
+}
+
+.supply-detail-card.is-on::before {
+  background: var(--color-running);
+}
+
+.supply-detail-card.is-off::before {
+  background: var(--color-stopped);
+}
+
+.supply-detail-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.supply-detail-title {
+  color: var(--color-ocean);
+  font-size: 15px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.035em;
+}
+
+.supply-detail-description {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.supply-detail-card .equipment-status {
+  min-width: 54px;
+  padding: 5px 11px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.supply-detail-card.is-on .equipment-status {
+  color: var(--color-running);
+  background: var(--color-running-light);
+}
+
+.supply-detail-card.is-off .equipment-status {
+  color: var(--color-stopped);
+  background: var(--color-stopped-light);
+}
+
+.supply-indicator-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 24px;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+}
+
+.supply-detail-card.is-on .equipment-status-indicator {
+  background: var(--color-running);
+  box-shadow: 0 0 0 3px var(--color-running-light);
+}
+
+.supply-detail-card.is-off .equipment-status-indicator {
+  background: var(--color-stopped);
+  box-shadow: 0 0 0 3px var(--color-stopped-light);
+}
+
+.supply-feedback {
+  color: var(--color-ocean);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.supply-source-label {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.power-monitoring-note {
+  margin-top: 2px;
+  padding: 11px 12px;
+  color: #8A651F;
+  background: var(--color-warning-light);
+  border: 1px solid rgba(230, 162, 60, 0.22);
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  line-height: 1.5;
+}
