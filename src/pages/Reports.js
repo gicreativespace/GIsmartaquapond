@@ -154,12 +154,12 @@ export function Reports() {
   aeratorSection.append(aeratorHeading, aeratorList);
 
   content.append(
+    FarmDetails(DEMO_DATA.farm),
     intro,
     tabs,
     dateLabel,
     powerSection,
-    aeratorSection,
-    FarmDetails(DEMO_DATA.farm)
+    aeratorSection
   );
 
   page.append(Header(), content, BottomNavigation('reports'));
