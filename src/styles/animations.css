@@ -1,0 +1,177 @@
+
+/* =========================================
+   GI SMART POND
+   ANIMATION SYSTEM
+========================================= */
+
+/* =========================================
+   AERATOR - RUNNING ROTATION
+========================================= */
+
+@keyframes aerator-rotate {
+  from {
+    transform: translate(110px, 105px) rotate(0deg);
+  }
+
+  to {
+    transform: translate(110px, 105px) rotate(360deg);
+  }
+}
+
+/* ON state */
+
+.aerator-illustration.is-on .aerator-rotor {
+  animation: aerator-rotate 3s linear infinite;
+  transform-origin: 0 0;
+}
+
+/* OFF state */
+
+.aerator-illustration.is-off .aerator-rotor {
+  animation: none;
+}
+
+/* =========================================
+   AERATOR - WATER MOVEMENT
+========================================= */
+
+@keyframes aerator-water-flow {
+  0% {
+    transform: translateX(-5px);
+  }
+
+  50% {
+    transform: translateX(5px);
+  }
+
+  100% {
+    transform: translateX(-5px);
+  }
+}
+
+.aerator-illustration.is-on .aerator-water {
+  animation: aerator-water-flow 2s ease-in-out infinite;
+}
+
+.aerator-illustration.is-off .aerator-water {
+  animation: none;
+  transform: none;
+}
+
+/* =========================================
+   AERATOR - WATER SPLASH
+========================================= */
+
+@keyframes aerator-splash-motion {
+  0%, 100% {
+    opacity: 0.45;
+    transform: translateY(2px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.aerator-illustration.is-on .aerator-splash {
+  animation: aerator-splash-motion 1s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.aerator-illustration.is-off .aerator-splash {
+  animation: none;
+  opacity: 0;
+}
+
+/* =========================================
+   AERATOR - STATUS INDICATOR
+========================================= */
+
+.aerator-illustration.is-on .aerator-status-indicator {
+  fill: var(--color-running);
+}
+
+.aerator-illustration.is-off .aerator-status-indicator {
+  fill: var(--color-stopped);
+}
+
+/* =========================================
+   GENERAL UI ANIMATIONS
+========================================= */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-content {
+  animation: fade-in 300ms ease-out both;
+}
+
+.card {
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-normal);
+}
+
+/* =========================================
+   STATUS TRANSITIONS
+========================================= */
+
+.status-indicator,
+.status-dot,
+.status-badge {
+  transition:
+    color var(--transition-normal),
+    background-color var(--transition-normal);
+}
+
+/* =========================================
+   LOADING ANIMATION
+========================================= */
+
+@keyframes soft-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.is-loading {
+  animation: soft-pulse 1.4s ease-in-out infinite;
+}
+
+/* =========================================
+   REDUCED MOTION ACCESSIBILITY
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .aerator-illustration *,
+  .page-content,
+  .card,
+  .is-loading {
+    animation: none !important;
+    transition: none !important;
+  }
+}
