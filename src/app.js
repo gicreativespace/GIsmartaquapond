@@ -37,8 +37,6 @@ let appRoot = null;
 let currentPage = null;
 
 let navigationController = null;
-let contactPopupShownThisSession = false;
-
 function createBrandFooter() {
   const footer = document.createElement('footer');
   footer.className = 'brand-footer';
