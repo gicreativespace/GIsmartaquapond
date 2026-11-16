@@ -48,27 +48,18 @@ export function Header() {
   settingsButton.innerHTML = `
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="22"
-      height="22"
+      width="20"
+      height="20"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="1.8"
+      stroke-width="1.55"
       stroke-linecap="round"
       stroke-linejoin="round"
       aria-hidden="true"
     >
-      <circle cx="12" cy="12" r="3"/>
-      <path d="
-        M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06
-        -1.7 2.94-.08-.02a1.7 1.7 0 0 0-1.78.66l-.04.07
-        h-3.4l-.04-.07a1.7 1.7 0 0 0-1.78-.66l-.08.02
-        -1.7-2.94.06-.06A1.7 1.7 0 0 0 9.6 15l-.08-.03v-3.4
-        l.08-.03a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.7-2.94
-        .08.02a1.7 1.7 0 0 0 1.78-.66l.04-.07h3.4l.04.07
-        a1.7 1.7 0 0 0 1.78.66l.08-.02 1.7 2.94-.06.06
-        A1.7 1.7 0 0 0 19.4 12l.08.03v3.4z
-      "/>
+      <circle cx="12" cy="12" r="4.2"/>
+      <path d="M12 2.8v2.1M12 19.1v2.1M2.8 12h2.1M19.1 12h2.1M5.5 5.5 7 7M17 17l1.5 1.5M18.5 5.5 17 7M7 17l-1.5 1.5"/>
     </svg>
   `;
 
