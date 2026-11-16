@@ -267,7 +267,7 @@ export function Reports() {
         rows.push(Array.from(row.children).map((cell) => cell.textContent));
       });
     }
-    const csv = '\\uFEFF' + rows.map((row) => row.map(csvCell).join(',')).join('\\r\\n');
+    const csv = '\uFEFF' + rows.map((row) => row.map(csvCell).join(',')).join('\r\n');
     downloadFile(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'GI-SMART-POND-' + selectedPeriod + '.csv');
   });
 
