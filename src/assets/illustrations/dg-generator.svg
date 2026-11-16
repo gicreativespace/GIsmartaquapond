@@ -1,0 +1,73 @@
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 160 110"
+  fill="none"
+  role="img"
+  aria-label="Industrial diesel generator"
+>
+  <defs>
+    <linearGradient id="dgBody" x1="25" y1="25" x2="130" y2="95">
+      <stop offset="0%" stop-color="#D9EAF1"/>
+      <stop offset="100%" stop-color="#A8C7D5"/>
+    </linearGradient>
+    <linearGradient id="dgPanel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#234E64"/>
+      <stop offset="100%" stop-color="#123B50"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Base frame -->
+  <path d="M13 88H147L141 98H20L13 88Z"
+    fill="#456477"/>
+  <path d="M23 98V103M136 98V103"
+    stroke="#123B50" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Generator canopy -->
+  <rect x="19" y="29" width="123" height="60" rx="7"
+    fill="url(#dgBody)" stroke="#668C9F" stroke-width="2"/>
+
+  <!-- Top canopy -->
+  <path d="M25 29L31 19H130L137 29"
+    fill="#DCEAF0" stroke="#668C9F" stroke-width="2"
+    stroke-linejoin="round"/>
+
+  <!-- Exhaust pipe -->
+  <path d="M112 19V8H121V19"
+    stroke="#456477" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M109 8H124"
+    stroke="#456477" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Radiator grille -->
+  <rect x="28" y="38" width="37" height="43" rx="3"
+    fill="#234E64"/>
+  {#if false}{/if}
+  <path d="M34 43V76M41 43V76M48 43V76M55 43V76M61 43V76"
+    stroke="#A8C7D5" stroke-width="2"/>
+
+  <!-- Engine compartment -->
+  <rect x="71" y="42" width="32" height="35" rx="3"
+    fill="#668C9F"/>
+  <path d="M77 50H97M77 57H97M77 64H97"
+    stroke="#DCEAF0" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="87" cy="70" r="4" fill="#123B50"/>
+
+  <!-- Control panel -->
+  <rect x="108" y="38" width="26" height="43" rx="3"
+    fill="url(#dgPanel)"/>
+  <rect x="113" y="44" width="16" height="11" rx="2"
+    fill="#DCEAF0"/>
+  <circle cx="121" cy="49.5" r="2.5" fill="#13A887"/>
+  <circle cx="116" cy="64" r="3" fill="#13A887"/>
+  <circle cx="126" cy="64" r="3" fill="#E6A23C"/>
+  <path d="M114 73H128"
+    stroke="#A8C7D5" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Side ventilation -->
+  <path d="M17 45H11V72H17"
+    stroke="#668C9F" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Output indicator -->
+  <circle class="dg-output-indicator"
+    cx="143" cy="24" r="5" fill="#13A887"/>
+</svg>
