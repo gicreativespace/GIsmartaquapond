@@ -157,7 +157,7 @@ export function calculateRuntimeHours(snapshot, equipmentId, windowStart, window
   // INITIAL_STATUS is valid from the first recorded simulation timestamp,
   // not from midnight before the uploaded data begins.
   const effectiveStart = Math.max(windowStart, snapshot.startTime ?? windowStart);
-  const effectiveEnd = Math.min(windowEnd, (snapshot.endTime ?? windowEnd) + 1);
+  const effectiveEnd = windowEnd;
   if (effectiveEnd <= effectiveStart) return 0;
 
   let state = snapshot.initialStatus[equipmentId] || 'OFF';
