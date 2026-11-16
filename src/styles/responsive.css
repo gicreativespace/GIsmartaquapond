@@ -126,3 +126,64 @@
     background: #FFFFFF;
   }
 }
+
+
+/* Mobile dashboard: always keep two cards per row */
+@media (max-width: 600px) {
+  .equipment-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, auto);
+    gap: 10px;
+  }
+
+  .equipment-card {
+    height: 158px;
+    min-height: 158px;
+    padding: 9px;
+  }
+
+  .equipment-illustration {
+    height: 62px;
+    min-height: 62px;
+  }
+
+  .bottom-navigation {
+    width: 100%;
+    min-height: calc(62px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 359px) {
+  .page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .equipment-card {
+    height: 150px;
+    min-height: 150px;
+    padding: 8px;
+  }
+
+  .equipment-card-title {
+    font-size: 11px;
+  }
+
+  .equipment-card-description,
+  .bottom-nav-label {
+    font-size: 9px;
+  }
+}
+
+/* Larger screens retain the same two-column dashboard */
+@media (min-width: 481px) and (max-width: 600px) {
+  .equipment-card {
+    height: 174px;
+    min-height: 174px;
+  }
+
+  .equipment-illustration {
+    height: 76px;
+    min-height: 76px;
+  }
+}
