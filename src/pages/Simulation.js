@@ -100,6 +100,7 @@ export function Simulation() {
   let eventIndex = 0;
   let timer = null;
   let snapshot = null;
+  let providerRegistered = false;
 
   function stopPlayback() {
     if (timer) window.clearInterval(timer);
@@ -159,8 +160,12 @@ export function Simulation() {
       mode: 'simulation',
       getSnapshot: () => snapshot
     };
-    setDataProvider(provider);
-    publishPondSnapshot(snapshot);
+    if (!providerRegistered) {
+      setDataProvider(provider);
+      providerRegistered = true;
+    } else {
+      publishPondSnapshot(snapshot);
+    }
   }
 
   function stepForward() {
