@@ -3168,7 +3168,16 @@
 
 /* Simulation-backed report period and event history */
 .reports-day-tabs {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.reports-summary-card[hidden] {
+  display: none !important;
+}
+
+.reports-day-button {
+  padding-inline: 4px;
+  white-space: nowrap;
 }
 
 .reports-event-list {
