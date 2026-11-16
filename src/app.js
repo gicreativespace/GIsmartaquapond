@@ -31,6 +31,10 @@ const PAGE_ROUTES = {
     load: () => import('./pages/Settings.js'),
     component: 'Settings'
   }
+,  simulation: {
+    load: () => import('./pages/Simulation.js'),
+    component: 'Simulation'
+  }
 };
 
 let appRoot = null;
