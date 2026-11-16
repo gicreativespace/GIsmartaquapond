@@ -11,11 +11,26 @@
  */
 
 const PAGE_ROUTES = {
-  home: () => import('./pages/Home.js'),
-  power: () => import('./pages/Power.js'),
-  aerators: () => import('./pages/Aerators.js'),
-  reports: () => import('./pages/Reports.js'),
-  settings: () => import('./pages/Settings.js')
+  home: {
+    load: () => import('./pages/Home.js'),
+    component: 'Home'
+  },
+  power: {
+    load: () => import('./pages/Power.js'),
+    component: 'Power'
+  },
+  aerators: {
+    load: () => import('./pages/Aerators.js'),
+    component: 'Aerators'
+  },
+  reports: {
+    load: () => import('./pages/Reports.js'),
+    component: 'Reports'
+  },
+  settings: {
+    load: () => import('./pages/Settings.js'),
+    component: 'Settings'
+  }
 };
 
 let appRoot = null;
@@ -31,6 +46,25 @@ function getCurrentRoute() {
   return PAGE_ROUTES[route] ? route : 'home';
 }
 
+function showPageError(error) {
+  console.error('Page loading failed:', error);
+
+  appRoot.removeAttribute('aria-busy');
+
+  const errorElement = document.createElement('div');
+  errorElement.className = 'app-error';
+  errorElement.setAttribute('role', 'alert');
+
+  const heading = document.createElement('h2');
+  heading.textContent = 'Unable to load this page';
+
+  const message = document.createElement('p');
+  message.textContent = 'Please refresh the application.';
+
+  errorElement.append(heading, message);
+  appRoot.replaceChildren(errorElement);
+}
+
 async function renderRoute() {
   const route = getCurrentRoute();
 
@@ -40,25 +74,35 @@ async function renderRoute() {
     navigationController.abort();
   }
 
-  navigationController = new AbortController();
+  const controller = new AbortController();
+  navigationController = controller;
 
   appRoot.setAttribute('aria-busy', 'true');
 
   try {
-    const pageModule = await PAGE_ROUTES[route]();
+    const routeConfig = PAGE_ROUTES[route];
 
-    if (!pageModule.renderPage) {
-      throw new Error(`renderPage() missing in ${route} page`);
+    const pageModule = await routeConfig.load();
+
+    if (controller.signal.aborted) return;
+
+    const renderPage = pageModule[routeConfig.component];
+
+    if (typeof renderPage !== 'function') {
+      throw new Error(
+        `${routeConfig.component}() missing in ${route} page`
+      );
     }
 
-    const pageElement = await pageModule.renderPage();
+    const pageElement = renderPage();
 
     if (!(pageElement instanceof HTMLElement)) {
-      throw new Error(`Invalid page element returned by ${route}`);
+      throw new Error(
+        `Invalid page element returned by ${route}`
+      );
     }
 
-    // Prevent an older navigation request from replacing a newer page.
-    if (navigationController.signal.aborted) return;
+    if (controller.signal.aborted) return;
 
     appRoot.replaceChildren(pageElement);
 
@@ -72,30 +116,20 @@ async function renderRoute() {
         detail: { page: currentPage }
       })
     );
+
   } catch (error) {
-    if (navigationController.signal.aborted) return;
+    if (controller.signal.aborted) return;
 
-    console.error('Page loading failed:', error);
-
-    appRoot.removeAttribute('aria-busy');
-
-    const errorElement = document.createElement('div');
-    errorElement.className = 'app-error';
-    errorElement.setAttribute('role', 'alert');
-
-    const heading = document.createElement('h2');
-    heading.textContent = 'Unable to load this page';
-
-    const message = document.createElement('p');
-    message.textContent = 'Please refresh the application.';
-
-    errorElement.append(heading, message);
-    appRoot.replaceChildren(errorElement);
+    showPageError(error);
   }
 }
 
 function handleNavigation(event) {
-  const link = event.target.closest('[data-route]');
+  const target = event.target;
+
+  if (!(target instanceof Element)) return;
+
+  const link = target.closest('[data-route]');
 
   if (!link || !appRoot.contains(link)) return;
 
