@@ -996,3 +996,191 @@
   transform: scale(0.94);
   background: #F0F8F8;
 }
+
+
+/* =========================================
+   AERATOR MONITORING - PREMIUM DETAIL GRID
+========================================= */
+
+.aerators-page .page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.aerator-page-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 3px 1px 0;
+}
+
+.aerators-page .page-title {
+  color: var(--color-ocean);
+  font-size: 22px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.aerators-page .page-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.aerator-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 15px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 15px;
+  box-shadow: var(--shadow-card);
+}
+
+.aerator-summary-total {
+  color: var(--color-ocean);
+  font-size: 17px;
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.aerator-summary-breakdown {
+  color: var(--color-text-secondary);
+  font-size: 10px;
+  text-align: right;
+}
+
+.aerator-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+  width: 100%;
+}
+
+.aerator-detail-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 7px;
+  padding: 10px;
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+.aerator-detail-card.is-on {
+  border-color: #D7EDE4;
+}
+
+.aerator-detail-card.is-off {
+  border-color: #F0DEDD;
+}
+
+.aerator-detail-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  min-width: 0;
+}
+
+.aerator-detail-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-ocean);
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aerator-detail-card .equipment-status {
+  flex: 0 0 auto;
+  min-width: 38px;
+  padding: 4px 8px;
+  font-size: 9px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.aerator-detail-card.is-on .equipment-status {
+  color: var(--color-running);
+  background: var(--color-running-light);
+}
+
+.aerator-detail-card.is-off .equipment-status {
+  color: var(--color-stopped);
+  background: var(--color-stopped-light);
+}
+
+.aerator-detail-visual,
+.aerator-wheel-illustration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.aerator-detail-visual {
+  min-height: 116px;
+  padding: 0;
+  border-radius: 11px;
+  background: #F7FBFC;
+}
+
+.aerator-wheel-illustration svg.aerator-illustration {
+  display: block;
+  width: 100%;
+  max-width: 190px;
+  height: auto;
+  overflow: visible;
+}
+
+.aerator-feedback {
+  color: var(--color-text-secondary);
+  font-size: 9px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.aerator-detail-card.is-on .aerator-feedback {
+  color: var(--color-running);
+}
+
+.aerator-detail-card.is-off .aerator-feedback {
+  color: var(--color-stopped);
+}
+
+.aerator-monitoring-note {
+  padding: 10px 12px;
+  color: #8A651F;
+  background: var(--color-warning-light);
+  border: 1px solid rgba(230, 162, 60, 0.2);
+  border-radius: 12px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+@media (max-width: 359px) {
+  .aerator-list {
+    gap: 8px;
+  }
+
+  .aerator-detail-card {
+    padding: 8px;
+  }
+
+  .aerator-detail-visual {
+    min-height: 104px;
+  }
+
+  .aerator-detail-name {
+    font-size: 10px;
+  }
+}
