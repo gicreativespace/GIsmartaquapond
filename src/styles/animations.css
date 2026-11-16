@@ -1,52 +1,31 @@
-
 /* =========================================
-   GI SMART POND
-   ANIMATION SYSTEM
-========================================= */
-
-/* =========================================
-   AERATOR - RUNNING ROTATION
+   GI SMART POND - ANIMATION SYSTEM
 ========================================= */
 
 @keyframes aerator-rotate {
-  from {
-    transform: translate(110px, 105px) rotate(0deg);
-  }
-
-  to {
-    transform: translate(110px, 105px) rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
-
-/* ON state */
-
-.aerator-illustration.is-on .aerator-rotor {
-  animation: aerator-rotate 3s linear infinite;
-  transform-origin: 0 0;
-}
-
-/* OFF state */
-
-.aerator-illustration.is-off .aerator-rotor {
-  animation: none;
-}
-
-/* =========================================
-   AERATOR - WATER MOVEMENT
-========================================= */
 
 @keyframes aerator-water-flow {
-  0% {
-    transform: translateX(-5px);
-  }
+  0%, 100% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+}
 
-  50% {
-    transform: translateX(5px);
-  }
+@keyframes aerator-splash-motion {
+  0%, 100% { opacity: .45; transform: translateY(2px); }
+  50% { opacity: 1; transform: translateY(-3px); }
+}
 
-  100% {
-    transform: translateX(-5px);
-  }
+/* The SVG is inline, so these state classes reach its internal parts. */
+.aerator-illustration.is-on .aerator-rotor-spin {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: aerator-rotate 3s linear infinite;
+}
+
+.aerator-illustration.is-off .aerator-rotor-spin {
+  animation: none;
+  transform: none;
 }
 
 .aerator-illustration.is-on .aerator-water {
@@ -58,25 +37,10 @@
   transform: none;
 }
 
-/* =========================================
-   AERATOR - WATER SPLASH
-========================================= */
-
-@keyframes aerator-splash-motion {
-  0%, 100% {
-    opacity: 0.45;
-    transform: translateY(2px);
-  }
-
-  50% {
-    opacity: 1;
-    transform: translateY(-3px);
-  }
-}
-
 .aerator-illustration.is-on .aerator-splash {
-  animation: aerator-splash-motion 1s ease-in-out infinite;
+  transform-box: fill-box;
   transform-origin: center;
+  animation: aerator-splash-motion 1s ease-in-out infinite;
 }
 
 .aerator-illustration.is-off .aerator-splash {
@@ -84,42 +48,31 @@
   opacity: 0;
 }
 
-/* =========================================
-   AERATOR - STATUS INDICATOR
-========================================= */
+.aerator-illustration.is-off .aerator-blades path {
+  fill: url(#aeratorBladeOff);
+}
 
-.aerator-illustration.is-on .aerator-status-indicator {
-  fill: var(--color-running);
+.aerator-illustration.is-off .aerator-hub-outer {
+  fill: url(#aeratorHubOff);
 }
 
 .aerator-illustration.is-off .aerator-status-indicator {
   fill: var(--color-stopped);
 }
 
-/* =========================================
-   GENERAL UI ANIMATIONS
-========================================= */
+.aerator-illustration.is-on .aerator-status-indicator {
+  fill: var(--color-running);
+}
 
+/* General UI animations */
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .page-content {
@@ -132,10 +85,6 @@
     box-shadow var(--transition-normal);
 }
 
-/* =========================================
-   STATUS TRANSITIONS
-========================================= */
-
 .status-indicator,
 .status-dot,
 .status-badge {
@@ -144,27 +93,14 @@
     background-color var(--transition-normal);
 }
 
-/* =========================================
-   LOADING ANIMATION
-========================================= */
-
 @keyframes soft-pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.45;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: .45; }
 }
 
 .is-loading {
   animation: soft-pulse 1.4s ease-in-out infinite;
 }
-
-/* =========================================
-   REDUCED MOTION ACCESSIBILITY
-========================================= */
 
 @media (prefers-reduced-motion: reduce) {
   .aerator-illustration *,
