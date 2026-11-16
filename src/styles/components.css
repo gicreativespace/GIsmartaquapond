@@ -1622,3 +1622,173 @@
     font-weight: 600;
   }
 }
+
+
+/* =========================================
+   GI CREATIVE SPACE FOOTER & CONTACT POPUP
+========================================= */
+
+.brand-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  margin: 18px 0 8px;
+  padding: 12px 8px 6px;
+  text-align: center;
+}
+
+.brand-footer-credit {
+  color: var(--color-ocean);
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.015em;
+  line-height: 1.4;
+}
+
+.brand-footer-tagline {
+  color: var(--color-teal);
+  font-size: 10px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.015em;
+  line-height: 1.4;
+}
+
+.brand-contact-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  background: rgba(12, 37, 49, 0.38);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  animation: brand-contact-fade-in 220ms ease both;
+}
+
+.brand-contact-dialog {
+  position: relative;
+  width: min(100%, 360px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  padding: 26px 22px 24px;
+  border: 1px solid rgba(231, 239, 242, 0.9);
+  border-radius: 24px;
+  background: #FFFFFF;
+  box-shadow: 0 20px 55px rgba(18, 59, 80, 0.2);
+  text-align: center;
+  animation: brand-contact-rise-in 260ms cubic-bezier(.2,.75,.25,1) both;
+}
+
+.brand-contact-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #E8EFF1;
+  border-radius: 50%;
+  color: #617780;
+  background: #F4F7F8;
+}
+
+.brand-contact-close svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.brand-contact-icon {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 9px;
+  border-radius: 19px;
+  color: var(--color-teal);
+  background: #EAF6F4;
+}
+
+.brand-contact-icon svg {
+  width: 29px;
+  height: 29px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.brand-contact-dialog h2 {
+  color: var(--color-ocean);
+  font-size: 19px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.025em;
+}
+
+.brand-contact-dialog p {
+  max-width: 285px;
+  color: #71858D;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.brand-contact-whatsapp {
+  width: 100%;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 3px;
+  border-radius: 999px;
+  color: #FFFFFF;
+  background: #25D366;
+  box-shadow: 0 5px 14px rgba(37, 211, 102, 0.2);
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.brand-contact-whatsapp svg {
+  width: 22px;
+  height: 22px;
+}
+
+.brand-contact-whatsapp:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
+.header-settings[hidden] {
+  display: none !important;
+}
+
+@keyframes brand-contact-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes brand-contact-rise-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-contact-overlay,
+  .brand-contact-dialog {
+    animation: none;
+  }
+}
