@@ -71,7 +71,7 @@ export function parsePondData(text) {
       const [timestamp, rawId, rawState] = parts;
       const id = rawId.toUpperCase();
       const state = rawState.toUpperCase();
-      const time = Date.parse(timestamp);
+      const time = Date.parse(`${timestamp}+05:30`);
       if (!Number.isFinite(time) || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(timestamp)) {
         errors.push(`Line ${index + 1}: invalid timestamp.`);
         return;
@@ -92,13 +92,13 @@ export function parsePondData(text) {
   }
   if (!events.length) errors.push('EVENTS: no valid events were found.');
 
-  events.sort((a, b) => a.time - b.time);
   for (let index = 1; index < events.length; index += 1) {
     if (events[index].time < events[index - 1].time) {
       errors.push('EVENTS: timestamps must be in chronological order.');
       break;
     }
   }
+  events.sort((a, b) => a.time - b.time);
 
   if (errors.length) {
     const error = new Error('The simulation file needs corrections.');
@@ -134,7 +134,12 @@ export function getSimulationSnapshot(simulation, eventIndex) {
     eventIndex,
     totalEvents: simulation.events.length,
     appliedEvents,
-    nextEvent: simulation.events[eventIndex] ?? null
+    nextEvent: simulation.events[eventIndex] ?? null,
+    initialStatus: { ...simulation.initialStatus },
+    allEvents: simulation.events,
+    config: simulation.config,
+    startTime: simulation.startTime,
+    endTime: simulation.endTime
   };
 }
 
@@ -144,4 +149,24 @@ export function formatSimulationTime(timestamp) {
     dateStyle: 'medium',
     timeStyle: 'short'
   }).format(new Date(timestamp));
+}
+
+/** Calculate ON duration inside a selected time window. */
+export function calculateRuntimeHours(snapshot, equipmentId, windowStart, windowEnd) {
+  if (!snapshot?.initialStatus || !Array.isArray(snapshot.allEvents)) return null;
+  let state = snapshot.initialStatus[equipmentId] || 'OFF';
+  let cursor = windowStart;
+  let duration = 0;
+  snapshot.allEvents.forEach((event) => {
+    if (event.time < windowStart) {
+      state = event.id === equipmentId ? event.state : state;
+      return;
+    }
+    if (event.time >= windowEnd) return;
+    if (state === 'ON') duration += Math.max(0, event.time - cursor);
+    if (event.id === equipmentId) state = event.state;
+    cursor = event.time;
+  });
+  if (state === 'ON') duration += Math.max(0, windowEnd - cursor);
+  return Math.round((duration / 3600000) * 10) / 10;
 }
