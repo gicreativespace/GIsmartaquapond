@@ -9,10 +9,12 @@ import { BottomNavigation } from '../components/BottomNavigation.js';
 import { AeratorCard } from '../components/AeratorCard.js';
 import { ReportsCard } from '../components/ReportsCard.js';
 import { DEMO_DATA } from '../data/demoData.js';
+import { subscribeToPondData } from '../data/dataProvider.js';
 
-function createSupplyTile({ label, status, isOn, type, note }) {
+function createSupplyTile({ label, status, isOn, type, note, equipmentId }) {
   const tile = document.createElement('div');
   tile.className = `home-supply-tile ${isOn ? 'is-on' : 'is-off'} `;
+  tile.dataset.equipmentId = equipmentId;
 
   const top = document.createElement('div');
   top.className = 'home-supply-top';
@@ -75,14 +77,16 @@ function createPowerOverview(power = {}, dg = {}) {
       status: ebOn ? 'ON' : 'OFF',
       isOn: ebOn,
       type: 'eb',
-      note: ebOn ? 'Supply Available' : 'Supply Unavailable'
+      note: ebOn ? 'Supply Available' : 'Supply Unavailable',
+      equipmentId: 'EB'
     }),
     createSupplyTile({
       label: 'DG SUPPLY',
       status: dgOn ? 'ON' : 'OFF',
       isOn: dgOn,
       type: 'dg',
-      note: dgOn ? 'Output Available' : 'Output Unavailable'
+      note: dgOn ? 'Output Available' : 'Output Unavailable',
+      equipmentId: 'DG'
     })
   );
 
@@ -119,5 +123,31 @@ export function Home() {
 
   const navigation = BottomNavigation('home');
   page.append(header, content, navigation);
+
+  subscribeToPondData((snapshot) => {
+    if (!snapshot || !snapshot.status) return;
+    ['EB', 'DG'].forEach((id) => {
+      const tile = page.querySelector('.home-supply-tile[data-equipment-id="' + id + '"]');
+      if (!tile) return;
+      const isOn = snapshot.status[id] === 'ON';
+      tile.classList.toggle('is-on', isOn);
+      tile.classList.toggle('is-off', !isOn);
+      tile.querySelector('.home-supply-status').textContent = isOn ? 'ON' : 'OFF';
+      tile.querySelector('.home-supply-note').textContent = id === 'EB'
+        ? (isOn ? 'Supply Available' : 'Supply Unavailable')
+        : (isOn ? 'Output Available' : 'Output Unavailable');
+    });
+    const aeratorsNow = snapshot.aerators || [];
+    const running = aeratorsNow.filter((item) => item.state === 'ON').length;
+    const aeratorCardNow = page.querySelector('.aerator-card');
+    if (aeratorCardNow) {
+      const total = aeratorsNow.length;
+      aeratorCardNow.classList.toggle('is-on', running > 0);
+      aeratorCardNow.classList.toggle('is-off', running === 0);
+      aeratorCardNow.querySelector('.equipment-status').textContent =
+        String(running).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + ' ON';
+      aeratorCardNow.setAttribute('aria-label', running + ' of ' + total + ' aerators have starter feedback ON');
+    }
+  });
   return page;
 }
