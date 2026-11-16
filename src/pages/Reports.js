@@ -93,20 +93,39 @@ function createAeratorRow(number) {
 }
 
 
-function getSimulationPeriodWindow(timestamp, days) {
+function getISTDateParts(timestamp) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit', day: '2-digit'
   }).formatToParts(new Date(timestamp));
   const values = {};
   parts.forEach((part) => { if (part.type !== 'literal') values[part.type] = Number(part.value); });
-  const todayStart = Date.UTC(values.year, values.month - 1, values.day) - (330 * 60000);
-  return { start: todayStart - ((days - 1) * 86400000), end: todayStart + 86400000 };
+  return values;
+}
+
+function getISTDayWindow(timestamp) {
+  const values = getISTDateParts(timestamp);
+  const start = Date.UTC(values.year, values.month - 1, values.day) - (330 * 60000);
+  return { start, end: start + 86400000 };
+}
+
+function getReportPeriodWindow(timestamp, period) {
+  const day = getISTDayWindow(timestamp);
+  if (period === 'tomorrow') return { start: day.end, end: day.end + 86400000 };
+  if (period === 'week') return { start: day.start - (6 * 86400000), end: day.end };
+  if (period === 'month') {
+    const values = getISTDateParts(timestamp);
+    return {
+      start: Date.UTC(values.year, values.month - 1, 1) - (330 * 60000),
+      end: Date.UTC(values.year, values.month, 1) - (330 * 60000)
+    };
+  }
+  return day;
 }
 
 function formatReportDate(timestamp) {
   return new Intl.DateTimeFormat('en-IN', {
     timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric'
-  }).format(new Date(timestamp + 12 * 60 * 60 * 1000));
+  }).format(new Date(timestamp));
 }
 
 function formatEventTime(timestamp) {
@@ -126,19 +145,19 @@ export function Reports() {
   );
 
   let selectedPeriod = 'today';
-  let selectedDays = 1;
   let activeSimulationSnapshot = null;
   const dateLabel = element('p', 'reports-date-label', getISTDateLabel(0));
 
   const tabs = element('div', 'reports-day-tabs');
   tabs.setAttribute('role', 'group');
-  tabs.setAttribute('aria-label', 'Report day');
+  tabs.setAttribute('aria-label', 'Report period');
 
   const tabButtons = new Map();
   [
-    { id: 'today', label: 'Today', days: 1 },
-    { id: '7days', label: '7 Days', days: 7 },
-    { id: '30days', label: '30 Days', days: 30 }
+    { id: 'today', label: 'Today' },
+    { id: 'tomorrow', label: 'Tomorrow' },
+    { id: 'week', label: 'Week' },
+    { id: 'month', label: 'Month' }
   ].forEach((period) => {
     const button = element('button', 'reports-day-button', period.label);
     button.type = 'button';
@@ -146,14 +165,13 @@ export function Reports() {
     if (period.id === selectedPeriod) button.classList.add('active');
     button.addEventListener('click', () => {
       selectedPeriod = period.id;
-      selectedDays = period.days;
       tabButtons.forEach((tab, id) => {
         const active = id === selectedPeriod;
         tab.classList.toggle('active', active);
         tab.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
       if (activeSimulationSnapshot) renderSimulationReport(activeSimulationSnapshot);
-      else dateLabel.textContent = period.label + ' · ' + getISTDateLabel(0);
+      else dateLabel.textContent = period.label + ' · ' + getISTDateLabel(period.id === 'tomorrow' ? 1 : 0);
     });
     tabButtons.set(period.id, button);
     tabs.append(button);
@@ -212,19 +230,24 @@ export function Reports() {
     activeSimulationSnapshot = snapshot;
     if (!snapshot || !Array.isArray(snapshot.allEvents)) return;
 
-    const window = getSimulationPeriodWindow(snapshot.currentTime, selectedDays);
-    // Reports use the complete date coverage in the uploaded TXT file,
-    // not only the events reached by the playback cursor.
-    const dataStart = getSimulationPeriodWindow(snapshot.startTime, 1).start;
-    const dataEnd = getSimulationPeriodWindow(snapshot.endTime, 1).end;
+    // Anchor simulation reports to the latest date in the uploaded data.
+    // This reports the complete available period before playback begins.
+    const window = getReportPeriodWindow(snapshot.endTime, selectedPeriod);
+    const dataStart = getISTDayWindow(snapshot.startTime).start;
+    const dataEnd = getISTDayWindow(snapshot.endTime).end;
     const reportStart = Math.max(window.start, dataStart);
     const reportEnd = Math.min(window.end, dataEnd);
     const hasCoverage = reportEnd > reportStart;
     const rangeStartLabel = formatReportDate(reportStart);
-    const rangeEndLabel = formatReportDate(reportEnd - 1);
-    dateLabel.textContent = selectedDays === 1
-      ? 'Today · ' + rangeEndLabel
-      : rangeStartLabel + ' – ' + rangeEndLabel + ' · ' + selectedDays + ' days';
+    const rangeEndLabel = hasCoverage ? formatReportDate(reportEnd - 1) : formatReportDate(window.start);
+    const periodLabels = { today: 'Today', tomorrow: 'Tomorrow', week: 'Week', month: 'Month' };
+    dateLabel.textContent = selectedPeriod === 'today' || selectedPeriod === 'tomorrow'
+      ? periodLabels[selectedPeriod] + ' · ' + rangeEndLabel
+      : rangeStartLabel + ' – ' + rangeEndLabel;
+
+    const showDailyDetails = selectedPeriod === 'today' || selectedPeriod === 'tomorrow';
+    aeratorSection.hidden = !showDailyDetails;
+    eventsSection.hidden = !showDailyDetails;
 
     ['EB', 'DG'].forEach((id) => {
       const card = page.querySelector('.reports-power-item[data-equipment-id="' + id + '"]');
@@ -246,7 +269,7 @@ export function Reports() {
       row.querySelector('.reports-aerator-hours').textContent =
         hours === null ? '-- hrs' : hours.toFixed(1) + ' hrs';
       row.querySelector('.reports-aerator-fill').style.width =
-        hours === null ? '0%' : Math.min(100, (hours / Math.max(1, selectedDays * 24)) * 100) + '%';
+        hours === null ? '0%' : Math.min(100, (hours / 24) * 100) + '%';
     }
 
     const visibleEvents = snapshot.allEvents.filter((event) =>
