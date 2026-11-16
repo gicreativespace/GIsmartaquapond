@@ -30,8 +30,8 @@ const PAGE_ROUTES = {
   settings: {
     load: () => import('./pages/Settings.js'),
     component: 'Settings'
-  }
-,  simulation: {
+  },
+  simulation: {
     load: () => import('./pages/Simulation.js'),
     component: 'Simulation'
   }
