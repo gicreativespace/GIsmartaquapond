@@ -190,17 +190,18 @@ export function Reports() {
     dateLabel.textContent = new Intl.DateTimeFormat('en-IN', {
       timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric'
     }).format(new Date(window.start + 12 * 60 * 60 * 1000));
+    const reportEnd = Math.min(window.end, Math.max(window.start, snapshot.currentTime + 1));
     ['EB', 'DG'].forEach((id) => {
       const card = page.querySelector('.reports-power-item[data-equipment-id="' + id + '"]');
       if (!card) return;
-      const hours = calculateRuntimeHours(snapshot, id, window.start, window.end);
+      const hours = calculateRuntimeHours(snapshot, id, window.start, reportEnd);
       card.querySelector('.reports-power-hours').textContent = hours.toFixed(1) + ' hrs';
     });
     for (let number = 1; number <= 10; number += 1) {
       const id = 'AERATOR_' + String(number).padStart(2, '0');
       const row = page.querySelector('.reports-aerator-row[data-equipment-id="' + id + '"]');
       if (!row) continue;
-      const hours = calculateRuntimeHours(snapshot, id, window.start, window.end);
+      const hours = calculateRuntimeHours(snapshot, id, window.start, reportEnd);
       row.querySelector('.reports-aerator-hours').textContent = hours.toFixed(1) + ' hrs';
       row.querySelector('.reports-aerator-fill').style.width = Math.min(100, (hours / 24) * 100) + '%';
     }
