@@ -2303,7 +2303,7 @@
   }
 }
 
-/* On Home, the signature sits directly below the four navigation icons. */
+/* Home signature sits neatly above the bottom navigation, matching other dashboards. */
 #app[data-current-page="home"] .bottom-navigation {
   bottom: calc(36px + env(safe-area-inset-bottom));
   min-height: 62px;
@@ -2314,29 +2314,29 @@
   position: fixed;
   z-index: 100;
   left: 50%;
-  bottom: 0;
+  bottom: calc(98px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   width: min(100%, 600px);
-  height: calc(36px + env(safe-area-inset-bottom));
+  height: 42px;
   margin: 0;
-  padding: 3px 8px calc(3px + env(safe-area-inset-bottom));
+  padding: 3px 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.98);
-  border-top: 1px solid var(--color-border);
-  box-shadow: 0 -3px 12px rgba(18, 59, 80, 0.035);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.92);
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: blur(10px);
 }
 
 #app[data-current-page="home"] .brand-footer-trigger {
-  min-height: 30px;
-  gap: 1px;
-  padding: 1px 12px;
+  min-height: 36px;
+  gap: 2px;
+  padding: 2px 12px;
 }
 
-#app[data-current-page="home"] .brand-footer-credit { font-size: 10px; }
-#app[data-current-page="home"] .brand-footer-tagline { font-size: 9px; }
+#app[data-current-page="home"] .brand-footer-credit { font-size: 12px; }
+#app[data-current-page="home"] .brand-footer-tagline { font-size: 11px; }
 
 
 /* =========================================
