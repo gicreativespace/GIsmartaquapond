@@ -1,0 +1,128 @@
+
+/* =========================================
+   GI SMART POND
+   RESPONSIVE DESIGN
+========================================= */
+
+/* Small Mobile Devices */
+
+@media (max-width: 359px) {
+  :root {
+    --page-padding: 14px;
+    --card-gap: 10px;
+    --space-4: 14px;
+  }
+
+  .page {
+    padding-left: var(--page-padding);
+    padding-right: var(--page-padding);
+  }
+
+  .equipment-card {
+    min-height: 174px;
+    padding: 10px;
+  }
+
+  .equipment-title {
+    font-size: 12px;
+  }
+
+  .equipment-value {
+    font-size: 20px;
+  }
+
+  .equipment-illustration {
+    height: 78px;
+  }
+
+  .farm-meta {
+    gap: 10px;
+  }
+}
+
+/* Standard Mobile Devices */
+
+@media (min-width: 360px) and (max-width: 480px) {
+  .equipment-card {
+    min-height: 185px;
+  }
+
+  .equipment-illustration {
+    height: 88px;
+  }
+}
+
+/* Large Mobile Devices */
+
+@media (min-width: 481px) and (max-width: 600px) {
+  .page {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .equipment-card {
+    min-height: 200px;
+  }
+
+  .equipment-illustration {
+    height: 100px;
+  }
+}
+
+/* Tablet and Larger Screens */
+
+@media (min-width: 601px) {
+  .app-layout {
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+    box-shadow: 0 0 30px rgba(18, 59, 80, 0.04);
+  }
+
+  .page {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .bottom-navigation {
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+  }
+}
+
+/* Landscape Mobile */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .bottom-navigation {
+    position: sticky;
+    transform: none;
+    left: auto;
+  }
+
+  .page {
+    min-height: auto;
+  }
+}
+
+/* Touch Devices */
+
+@media (hover: none) {
+  .equipment-card:hover {
+    transform: none;
+  }
+}
+
+/* Print */
+
+@media print {
+  .bottom-navigation {
+    display: none;
+  }
+
+  .page {
+    padding-bottom: 0;
+  }
+
+  body {
+    background: #FFFFFF;
+  }
+}
