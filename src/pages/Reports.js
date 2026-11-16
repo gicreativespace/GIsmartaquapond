@@ -378,20 +378,7 @@ export function Reports() {
         rows.push([id.replace('_', ' '), hours]);
       }
 
-      rows.push([], ['EVENTS HISTORY'], ['Time (IST)', 'Equipment', 'State']);
-      if (activeSimulationSnapshot && hasCoverage) {
-        const visibleEvents = activeSimulationSnapshot.allEvents.filter((event) =>
-          event.time >= reportWindow.start && event.time < reportWindow.end
-        );
-        visibleEvents.forEach((event) => {
-          rows.push([
-            formatEventTime(event.time),
-            event.id.replace('AERATOR_', 'AERATOR '),
-            event.state
-          ]);
-        });
-      }
-      if (rows[rows.length - 1][0] === 'State') rows.push(['No events', '', '']);
+
     } else {
       rows.push(
         [],
@@ -512,7 +499,7 @@ export function Reports() {
 
   function createXlsxBlob(rows) {
     const sectionNames = new Set([
-      'POWER SUMMARY', 'AERATOR RUNNING HOURS', 'EVENTS HISTORY',
+      'POWER SUMMARY', 'AERATOR RUNNING HOURS',
       'DAILY POWER BREAKDOWN'
     ]);
     const headerNames = new Set(['Equipment', 'Aerator', 'Time (IST)', 'Date']);
