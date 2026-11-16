@@ -950,3 +950,49 @@
 .power-monitoring-note strong {
   font-weight: var(--font-weight-semibold);
 }
+
+
+/* Header alignment and top-right settings placement */
+.app-header {
+  width: 100%;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.header-settings {
+  position: relative;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #E2ECEF;
+  border-radius: 14px;
+  background: #FFFFFF;
+  color: #078D87;
+  box-shadow: 0 3px 12px rgba(18, 59, 80, 0.07);
+}
+
+.header-settings svg {
+  width: 20px;
+  height: 20px;
+}
+
+.header-settings:active {
+  transform: scale(0.94);
+  background: #F0F8F8;
+}
