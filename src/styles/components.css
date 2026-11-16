@@ -3102,3 +3102,65 @@
   .reports-aerator-name,
   .reports-aerator-hours { font-size: 11px; }
 }
+
+
+/* =========================================
+   GI SMART POND — SIMULATION TESTING
+   Uses the existing aqua dashboard design tokens.
+========================================= */
+.simulation-content { display:flex; flex-direction:column; gap:14px; padding-bottom:18px; }
+.simulation-intro { display:flex; flex-direction:column; gap:5px; }
+.simulation-card { display:flex; flex-direction:column; gap:13px; }
+.simulation-section-heading { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.simulation-mode-pill,.simulation-status-pill { display:inline-flex; align-items:center; border-radius:999px; padding:5px 10px; background:var(--color-disabled); color:var(--color-text-secondary); font-size:11px; font-weight:600; white-space:nowrap; }
+.simulation-status-pill.is-ready { background:var(--color-running-light); color:var(--color-running); }
+.simulation-status-pill.is-playing { background:#DDF3F8; color:var(--color-ocean-light); }
+.simulation-file-input { position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+.simulation-file-picker { position:relative; min-height:78px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:12px; border:1px dashed var(--color-teal); border-radius:var(--radius-md); background:rgba(7,141,135,.035); cursor:pointer; }
+.simulation-file-icon { color:var(--color-teal); font-size:24px; line-height:1; }
+.simulation-file-copy { color:var(--color-ocean); font-size:14px; font-weight:600; }
+.simulation-file-hint,.simulation-file-name { color:var(--color-text-secondary); font-size:12px; }
+.simulation-file-name { overflow-wrap:anywhere; }
+.simulation-validation { padding:10px 12px; border-radius:var(--radius-sm); background:var(--color-disabled); color:var(--color-text-secondary); font-size:12px; line-height:1.45; }
+.simulation-validation.is-valid { background:var(--color-running-light); color:#14765F; }
+.simulation-validation.is-invalid { background:var(--color-stopped-light); color:#A63D39; }
+.simulation-time-label { color:var(--color-text-secondary); font-size:11px; font-weight:600; letter-spacing:.06em; }
+.simulation-time-value { color:var(--color-ocean); font-size:21px; font-weight:600; line-height:1.25; }
+.simulation-controls { display:grid; grid-template-columns:1fr 1fr  .8fr; gap:8px; }
+.simulation-controls button { min-width:0; min-height:42px; padding:0 8px; font-size:12px; }
+.simulation-controls button:disabled { opacity:.45; cursor:not-allowed; }
+.simulation-progress-track { height:6px; overflow:hidden; border-radius:999px; background:var(--color-disabled); }
+.simulation-progress-fill { display:block; width:0; height:100%; border-radius:inherit; background:var(--color-teal); transition:width .2s ease; }
+.simulation-progress-label { color:var(--color-text-secondary); font-size:11px; text-align:right; }
+.simulation-power-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.simulation-power-tile { min-width:0; display:flex; flex-direction:column; gap:4px; padding:13px; border:1px solid var(--color-border); border-radius:var(--radius-md); background:var(--color-surface); }
+.simulation-power-tile.is-on { background:#F0FAF6; border-color:#CDEDE0; }
+.simulation-power-tile.is-off { background:#FFF7F6; border-color:#F3DAD8; }
+.simulation-power-label { color:var(--color-text-secondary); font-size:11px; font-weight:600; }
+.simulation-power-value { color:var(--color-stopped); font-size:20px; line-height:1.2; }
+.simulation-power-tile.is-on .simulation-power-value { color:var(--color-running); }
+.simulation-power-note { color:var(--color-text-secondary); font-size:11px; }
+.simulation-aerator-heading { margin-top:3px; }
+.simulation-aerator-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:7px; }
+.simulation-aerator-tile { display:flex; flex-direction:column; align-items:center; gap:4px; padding:9px 3px; border:1px solid var(--color-border); border-radius:var(--radius-sm); background:var(--color-surface); }
+.simulation-aerator-tile.is-on { background:#F0FAF6; border-color:#CDEDE0; }
+.simulation-aerator-name { color:var(--color-ocean); font-size:11px; font-weight:600; }
+.simulation-aerator-state { color:var(--color-stopped); font-size:11px; }
+.simulation-aerator-tile.is-on .simulation-aerator-state { color:var(--color-running); }
+.simulation-event-count { color:var(--color-text-secondary); font-size:11px; }
+.simulation-event-list { display:flex; flex-direction:column; }
+.simulation-event-row { display:grid; grid-template-columns:48px minmax(0,1fr) 34px; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--color-divider); }
+.simulation-event-row:last-child { border-bottom:0; }
+.simulation-event-time { color:var(--color-text-secondary); font-size:11px; font-variant-numeric:tabular-nums; }
+.simulation-event-equipment { min-width:0; color:var(--color-ocean); font-size:12px; }
+.simulation-event-state { font-size:11px; text-align:right; }
+.simulation-event-state.is-on { color:var(--color-running); }
+.simulation-event-state.is-off { color:var(--color-stopped); }
+.simulation-empty-history { color:var(--color-text-secondary); font-size:12px; padding:8px 0; }
+@media (max-width:359px) {
+  .simulation-controls { grid-template-columns:1fr 1fr; }
+  .simulation-controls button:last-child { grid-column:1 / -1; }
+  .simulation-aerator-grid { gap:5px; }
+  .simulation-aerator-tile { padding:8px 1px; }
+  .simulation-aerator-name,.simulation-aerator-state { font-size:10px; }
+}
