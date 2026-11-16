@@ -19,9 +19,14 @@ export function getDataProvider() {
   return activeProvider;
 }
 
+export function getCurrentPondSnapshot() {
+  return activeProvider ? activeProvider.getSnapshot() : null;
+}
+
 export function subscribeToPondData(listener) {
   if (typeof listener !== 'function') return () => {};
   listeners.add(listener);
+  if (activeProvider) listener(activeProvider.getSnapshot());
   return () => listeners.delete(listener);
 }
 
