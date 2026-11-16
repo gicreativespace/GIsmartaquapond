@@ -1,0 +1,58 @@
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 120 100"
+  fill="none"
+  role="img"
+  aria-label="EB power supply illustration"
+>
+  <defs>
+    <linearGradient id="powerBolt" x1="38" y1="12" x2="80" y2="84">
+      <stop offset="0%" stop-color="#13A887"/>
+      <stop offset="100%" stop-color="#078D87"/>
+    </linearGradient>
+
+    <radialGradient id="powerGlow">
+      <stop offset="0%" stop-color="#13A887" stop-opacity=".24"/>
+      <stop offset="100%" stop-color="#13A887" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <circle
+    class="power-glow"
+    cx="59"
+    cy="49"
+    r="45"
+    fill="url(#powerGlow)"
+  />
+
+  <circle
+    cx="59"
+    cy="49"
+    r="35"
+    fill="#E5F6F1"
+  />
+
+  <path
+    d="M67 9L37 53H55L48 89L83 42H62L67 9Z"
+    fill="url(#powerBolt)"
+    stroke="#078D87"
+    stroke-width="2"
+    stroke-linejoin="round"
+    class="power-bolt"
+  />
+
+  <path
+    d="M13 27L20 22M99 27L106 22M13 72L20 77M99 72L106 77"
+    stroke="#13A887"
+    stroke-width="3"
+    stroke-linecap="round"
+    class="power-rays"
+  />
+
+  <circle cx="59" cy="49" r="45"
+    stroke="#078D87"
+    stroke-opacity=".12"
+    stroke-width="2"
+  />
+</svg>
