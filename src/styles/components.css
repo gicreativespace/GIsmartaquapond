@@ -878,3 +878,75 @@
     justify-content: space-between;
   }
 }
+
+
+/* =========================================
+   PREMIUM HEADER SETTINGS CONTROL
+========================================= */
+
+.header-settings {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid #E4EFF0;
+  border-radius: 13px;
+  background: #F0F8F8;
+  color: var(--color-teal);
+  box-shadow: 0 2px 8px rgba(18, 59, 80, 0.035);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.header-settings svg {
+  width: 19px;
+  height: 19px;
+}
+
+.header-settings:active {
+  transform: scale(0.96);
+  background: #E7F3F2;
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  .header-settings:hover {
+    background: #E8F4F3;
+    border-color: #D4E9E7;
+  }
+}
+
+/* Lighter premium power typography */
+.power-page .page-title {
+  font-size: 23px;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.035em;
+}
+
+.power-page .page-subtitle {
+  font-weight: var(--font-weight-regular);
+}
+
+.power-eyebrow {
+  font-weight: var(--font-weight-semibold);
+}
+
+.power-section-heading h2 {
+  font-weight: var(--font-weight-semibold);
+}
+
+.supply-detail-title {
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.025em;
+}
+
+.supply-feedback {
+  font-weight: var(--font-weight-medium);
+}
+
+.power-monitoring-note strong {
+  font-weight: var(--font-weight-semibold);
+}
