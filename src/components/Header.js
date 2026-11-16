@@ -44,6 +44,8 @@ export function Header() {
   settingsButton.className = 'icon-button header-settings';
   settingsButton.setAttribute('aria-label', 'Settings');
   settingsButton.setAttribute('data-route', 'settings');
+  settingsButton.hidden = true;
+  settingsButton.dataset.adminOnly = 'true';
 
   settingsButton.innerHTML = `
     <svg
